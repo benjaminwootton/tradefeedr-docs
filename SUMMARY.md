@@ -2,18 +2,18 @@
 
 * [Welcome](README.md)
 
-## Getting Started
+## About The Tradefeedr UI
 
-* [Quickstart](getting-started/quickstart.md)
-* [Ben your docs](getting-started/publish-your-docs.md)
+* [User Interface Tour](about-the-tradefeedr-ui/quickstart.md)
+* [The Data Warehouse](about-the-tradefeedr-ui/publish-your-docs.md)
 
-## Basics
+## About The Tradefeedr API
 
-* [Editor](basics/editor.md)
-* [Markdown](basics/markdown.md)
-* [Images & media](basics/images-and-media.md)
-* [Interactive blocks](basics/interactive-blocks.md)
-* [Integrations](basics/integrations.md)
+* [Spot](about-the-tradefeedr-api/editor.md)
+* [Markdown](about-the-tradefeedr-api/markdown.md)
+* [Images & media](about-the-tradefeedr-api/images-and-media.md)
+* [Interactive blocks](about-the-tradefeedr-api/interactive-blocks.md)
+* [Integrations](about-the-tradefeedr-api/integrations.md)
 
 ***
 
