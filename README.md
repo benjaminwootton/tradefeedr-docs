@@ -1,42 +1,13 @@
 ---
-icon: hand-wave
-layout:
-  width: default
-  title:
-    visible: true
-  description:
-    visible: false
-  tableOfContents:
-    visible: true
-  outline:
-    visible: true
-  pagination:
-    visible: true
-  metadata:
-    visible: true
 metaLinks:
   alternates:
-    - https://app.gitbook.com/s/yE16Xb3IemPxJWydtPOj/
+    - https://app.gitbook.com/s/2AwfWOGBWBxQmyvHedqW/
 ---
 
-# Welcome
+# Welcome To Tradefeedr
 
-sdafsadf
+Tradefeedr is a fintech company that builds a unified data and analytics platform for foreign-exchange (FX) trading and market participants. Their core offering is a secure, standardised API that aggregates trading data from multiple sources — liquidity providers, trading venues, ECNs, and more — and normalises it into a common format. This way, firms don’t need to wrestle with different data feeds and formats: they get a clean, “analysis-ready” data layer via Tradefeedr, whether they want raw transaction-level data or higher-level analytics. [tradefeedr.com+2tradefeedr.com+2](https://www.tradefeedr.com/platform?utm_source=chatgpt.com)
 
-asdfasfsf
+On top of providing the data infrastructure, Tradefeedr offers pre-built analytics tools and dashboards for things like transaction-cost analysis (TCA), best-execution metrics, liquidity management, and execution quality review. Users — whether buy-side institutions, brokers, or trading platforms — can also build custom analytics pipelines or dashboards using the platform’s APIs and built-in tools. The idea is to let clients focus on trading strategy and business decisions rather than the tedious work of data engineering and reconciliation. [tradefeedr.com+2PR Newswire+2](https://www.tradefeedr.com/platform?utm_source=chatgpt.com)
 
-how to bake a cake
-
-Welcome to the GitBook starter template! Here you'll get an overview of all the amazing features GitBook offers to help you build beautiful, interactive documentation.
-
-You'll see some of the best parts of GitBook in action — and find help on how you can turn this template into your own.
-
-
-
-sadfsadf
-
-
-
-### Jump right in
-
-<table data-view="cards"><thead><tr><th></th><th></th><th></th><th data-hidden data-card-cover data-type="files"></th><th data-hidden></th><th data-hidden data-card-target data-type="content-ref"></th></tr></thead><tbody><tr><td><h4><i class="fa-bolt">:bolt:</i></h4></td><td><strong>Quickstart</strong></td><td>Create your first site</td><td></td><td></td><td><a href="about-the-tradefeedr-ui/quickstart.md">quickstart.md</a></td></tr><tr><td><h4><i class="fa-leaf">:leaf:</i></h4></td><td><strong>Editor basics</strong></td><td>Learn the basics of GitBook</td><td></td><td></td><td><a href="https://github.com/GitbookIO/gitbook-templates/blob/main/product-docs/broken-reference/README.md">https://github.com/GitbookIO/gitbook-templates/blob/main/product-docs/broken-reference/README.md</a></td></tr><tr><td><h4><i class="fa-globe-pointer">:globe-pointer:</i></h4></td><td><strong>Publish your docs</strong></td><td>Share your docs online</td><td></td><td></td><td><a href="about-the-tradefeedr-ui/publish-your-docs.md">publish-your-docs.md</a></td></tr></tbody></table>
+Beyond private data analytics, Tradefeedr also enables collaborative data sharing and benchmarking. Firms can — with permission — pool anonymized data and compare execution performance, or benchmark liquidity providers against peers. This helps to create transparency across the FX market and fosters a more level playing field: instead of each party sitting on siloed data, there’s a shared, independent foundation for decision-making, performance measurement and dialogue.
