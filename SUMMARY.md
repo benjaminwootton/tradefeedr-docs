@@ -11,7 +11,7 @@
 
 * [Spot](about-the-tradefeedr-api/editor.md)
 * [Markdown Balraj](about-the-tradefeedr-api/markdown.md)
-* [Images & media](about-the-tradefeedr-api/images-and-media.md)
+* [Forward Trades](about-the-tradefeedr-api/images-and-media.md)
 * [Interactive blocks](about-the-tradefeedr-api/interactive-blocks.md)
 * [Integrations](about-the-tradefeedr-api/integrations.md)
 
