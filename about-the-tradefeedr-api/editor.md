@@ -19,36 +19,6 @@ metaLinks:
     - https://app.gitbook.com/s/yE16Xb3IemPxJWydtPOj/basics/editor
 ---
 
-# Editor
+# Spot
 
-GitBook has a powerful block-based editor that allows you to seamlessly create, update, and enhance your content.
-
-<figure><img src="https://gitbookio.github.io/onboarding-template-images/editor-hero.png" alt=""><figcaption></figcaption></figure>
-
-### Writing content
-
-GitBook offers a range of block types for you to add to your content inline — from simple text and tables, to code blocks and more. These elements will make your pages more useful to readers, and offer extra information and context.
-
-Either start typing below, or press `/` to see a list of the blocks you can insert into your page.
-
-### Add a new block
-
-{% stepper %}
-{% step %}
-#### Open the insert block menu
-
-Press `/` on your keyboard to open the insert block menu.
-{% endstep %}
-
-{% step %}
-#### Search for the block you need
-
-Try searching for “Stepper”, for exampe, to insert the stepper block.
-{% endstep %}
-
-{% step %}
-#### Insert and edit your block
-
-Click or press Enter to insert your block. From here, you’ll be able to edit it as needed.
-{% endstep %}
-{% endstepper %}
+Spot FX trades are foreign exchange transactions in which two parties agree to exchange one currency for another at the current market rate, with settlement typically occurring within two business days. These trades represent the most straightforward and liquid segment of the FX market, driven by real-time supply and demand across global financial centers. Spot FX is commonly used by corporations hedging short-term currency exposure, financial institutions managing positions, and traders seeking to capitalize on rapid price movements. Because pricing is highly transparent and execution is nearly instantaneous, spot FX serves as the foundation for many other currency products, making it a critical component of global financial markets.
