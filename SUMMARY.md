@@ -1,4 +1,4 @@
 # Table of contents
 
-* [Welcome To Tradefeedr Georgia](README.md)
+* [Tradefeedr Overview](README.md)
 * [Who Are We](who-are-we.md)
