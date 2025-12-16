@@ -49,6 +49,7 @@ The `DEMO = True` below indicates to run queries against Tradefeedr Demo data. M
 
 **Note:** All of the examples in the Tradefeedr Documentation site use Tradefeedr Demo data.
 
+{% code fullWidth="true" %}
 ```python
 import pandas as pd
 import numpy as np
@@ -57,6 +58,7 @@ import plotly.express as px
 
 DEMO = True
 ```
+{% endcode %}
 
 ### Algo API
 
