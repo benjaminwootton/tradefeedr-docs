@@ -60,7 +60,7 @@ DEMO = True
 
 ### Algo API
 
-#### Introduction
+#### Introduction <a href="#introduction" id="introduction"></a>
 
 ***
 
