@@ -58,8 +58,6 @@ import plotly.express as px
 DEMO = True
 ```
 
-![copy icon](https://docs.analytics.tradefeedr.com/docs/img/octicons-16.svg#view-clippy)
-
 ### Algo API
 
 #### Introduction
@@ -202,13 +200,11 @@ data_frame = pd.DataFrame(response["result"])
 data_frame
 ```
 
-![copy icon](https://docs.analytics.tradefeedr.com/docs/img/octicons-16.svg#view-clippy)
-
 **Results**
 
 ***
 
-![api\_algo\_parent\_order\_stats\_ex1.png](https://docs.analytics.tradefeedr.com/docs/_images/api_algo/parent_order_stats/api_algo_parent_order_stats_ex1.png)
+<figure><img src=".gitbook/assets/image (1).png" alt=""><figcaption></figcaption></figure>
 
 #### Execution Stats
 
@@ -271,13 +267,11 @@ data_frame = pd.DataFrame(response["result"])
 data_frame
 ```
 
-![copy icon](https://docs.analytics.tradefeedr.com/docs/img/octicons-16.svg#view-clippy)
-
 **Results**
 
 ***
 
-![api\_algo\_execution\_stats\_ex4.png](https://docs.analytics.tradefeedr.com/docs/_images/api_algo/execution_stats/api_algo_execution_stats_ex4.png)
+<figure><img src=".gitbook/assets/image (2).png" alt=""><figcaption></figcaption></figure>
 
 **Figure**
 
@@ -296,7 +290,7 @@ fig.update_layout(xaxis={"categoryorder":"total ascending"})
 fig.show()
 ```
 
-![copy icon](https://docs.analytics.tradefeedr.com/docs/img/octicons-16.svg#view-clippy)
+<figure><img src=".gitbook/assets/LP1_ExecVenue_Analysis.png" alt=""><figcaption></figcaption></figure>
 
 #### Markouts
 
@@ -343,13 +337,11 @@ data_frame = pd.DataFrame(response["result"])
 data_frame
 ```
 
-![copy icon](https://docs.analytics.tradefeedr.com/docs/img/octicons-16.svg#view-clippy)
-
 **Results**
 
 ***
 
-![api\_algo\_markouts\_ex1.png](https://docs.analytics.tradefeedr.com/docs/_images/api_algo/markouts/api_algo_markouts_ex1.png)
+<figure><img src=".gitbook/assets/image (3).png" alt=""><figcaption></figcaption></figure>
 
 **Figure**
 
@@ -377,7 +369,7 @@ fig.add_trace(go.Scatter(y=data_frame["Markouts"]+data_frame["Volatilities"], x=
 fig.show()
 ```
 
-![copy icon](https://docs.analytics.tradefeedr.com/docs/img/octicons-16.svg#view-clippy)
+<figure><img src=".gitbook/assets/Market_Data_Execution_Data_for_POID.png" alt=""><figcaption></figcaption></figure>
 
 #### Event History
 
@@ -448,13 +440,11 @@ data_frame = data_frame.sort_values(by="ArrivalTime", ascending=False)
 data_frame
 ```
 
-![copy icon](https://docs.analytics.tradefeedr.com/docs/img/octicons-16.svg#view-clippy)
-
 **Results**
 
 ***
 
-![api\_algo\_event\_history\_ex1.png](https://docs.analytics.tradefeedr.com/docs/_images/api_algo/event_history/api_algo_event_history_ex1.png)
+<figure><img src=".gitbook/assets/image (4).png" alt=""><figcaption></figcaption></figure>
 
 **Figures**
 
@@ -486,7 +476,11 @@ fig = px.line(data_frame[data_frame.ParentChild=="Child"][["SpreadPnLPM"]],
 fig.show()
 ```
 
-![copy icon](https://docs.analytics.tradefeedr.com/docs/img/octicons-16.svg#view-clippy)
+<figure><img src=".gitbook/assets/Child_Fills_TradeQuantityUSD.png" alt=""><figcaption></figcaption></figure>
+
+<figure><img src=".gitbook/assets/Price_and_Mid_Price_of_Child_Fills.png" alt=""><figcaption></figcaption></figure>
+
+<figure><img src=".gitbook/assets/Child_Fills_SpreadPnLPM.png" alt=""><figcaption></figcaption></figure>
 
 ### RFS
 
@@ -549,13 +543,11 @@ data_frame = pd.DataFrame(response["result"])
 data_frame
 ```
 
-![copy icon](https://docs.analytics.tradefeedr.com/docs/img/octicons-16.svg#view-clippy)
-
 **Results**
 
 ***
 
-![api\_rfs\_summary\_stats\_ex1.png](https://docs.analytics.tradefeedr.com/docs/_images/api_rfs/summary_stats/api_rfs_summary_stats_ex1.png)
+<figure><img src=".gitbook/assets/image (5).png" alt=""><figcaption></figcaption></figure>
 
 #### Execution Stats
 
@@ -626,13 +618,11 @@ data_frame = pd.DataFrame(response["result"])
 data_frame
 ```
 
-![copy icon](https://docs.analytics.tradefeedr.com/docs/img/octicons-16.svg#view-clippy)
-
 **Results**
 
 ***
 
-![api\_rfs\_execution\_stats\_ex1.png](https://docs.analytics.tradefeedr.com/docs/_images/api_rfs/execution_stats/api_rfs_execution_stats_ex1.png)
+<figure><img src=".gitbook/assets/image (6).png" alt=""><figcaption></figcaption></figure>
 
 #### Execution History
 
@@ -692,13 +682,11 @@ data_frame["TradeTime"] = pd.to_datetime(data_frame["TradeTime"], unit="ms" if s
 data_frame
 ```
 
-![copy icon](https://docs.analytics.tradefeedr.com/docs/img/octicons-16.svg#view-clippy)
-
 **Results**
 
 ***
 
-![api\_rfs\_execution\_history\_ex.png](https://docs.analytics.tradefeedr.com/docs/_images/api_rfs/execution_history/api_rfs_execution_history_ex.png)
+<figure><img src=".gitbook/assets/image (7).png" alt=""><figcaption></figcaption></figure>
 
 **Figure**
 
@@ -715,7 +703,7 @@ fig = px.scatter(data_frame, x="TradeTime", y="TradeQuantityUSD",
 fig.show()
 ```
 
-![copy icon](https://docs.analytics.tradefeedr.com/docs/img/octicons-16.svg#view-clippy)
+<figure><img src=".gitbook/assets/Volume_Traded_by_TradeTime.png" alt=""><figcaption></figcaption></figure>
 
 #### Markouts
 
@@ -761,13 +749,11 @@ data_frame = pd.DataFrame(response["result"])
 data_frame
 ```
 
-![copy icon](https://docs.analytics.tradefeedr.com/docs/img/octicons-16.svg#view-clippy)
-
 **Results**
 
 ***
 
-![api\_rfs\_markouts\_ex1.png](https://docs.analytics.tradefeedr.com/docs/_images/api_rfs/markouts/api_rfs_markouts_ex1.png)
+<figure><img src=".gitbook/assets/image (8).png" alt=""><figcaption></figcaption></figure>
 
 **Figure**
 
@@ -788,7 +774,7 @@ fig.update_yaxes(title="Markouts")
 fig.show()
 ```
 
-![copy icon](https://docs.analytics.tradefeedr.com/docs/img/octicons-16.svg#view-clippy)
+<figure><img src=".gitbook/assets/Markouts_by_LP.png" alt=""><figcaption></figcaption></figure>
 
 ### RFS Bilateral
 
@@ -866,13 +852,11 @@ data_frame = pd.DataFrame(response["result"])
 data_frame
 ```
 
-![copy icon](https://docs.analytics.tradefeedr.com/docs/img/octicons-16.svg#view-clippy)
-
 **Results**
 
 ***
 
-![api\_rfs\_bilateral\_aggregates\_ex1.png](https://docs.analytics.tradefeedr.com/docs/_images/api_rfs_bilateral/aggregates/api_rfs_bilateral_aggregates_ex1.png)
+<figure><img src=".gitbook/assets/image (9).png" alt=""><figcaption></figcaption></figure>
 
 **Figure**
 
@@ -897,7 +881,9 @@ fig = px.bar(data_frame[data_frame.OrderStatus=="R"], x="LP", y="DecayPM30s",
 fig.show()
 ```
 
-![copy icon](https://docs.analytics.tradefeedr.com/docs/img/octicons-16.svg#view-clippy)
+<figure><img src=".gitbook/assets/Filled_Trades_USDJPY_DecayPM30s_by_LP.png" alt=""><figcaption></figcaption></figure>
+
+<figure><img src=".gitbook/assets/Rejected_Trades_USDJPY_DecayPM30s_by_LP.png" alt=""><figcaption></figcaption></figure>
 
 #### Markouts
 
@@ -962,13 +948,11 @@ data_frame = pd.DataFrame(response["result"])
 data_frame
 ```
 
-![copy icon](https://docs.analytics.tradefeedr.com/docs/img/octicons-16.svg#view-clippy)
-
 **Results**
 
 ***
 
-![api\_rfs\_bilateral\_markouts\_ex1.png](https://docs.analytics.tradefeedr.com/docs/_images/api_rfs_bilateral/markouts/api_rfs_bilateral_markouts_ex1.png)
+<figure><img src=".gitbook/assets/image (10).png" alt=""><figcaption></figcaption></figure>
 
 **Figure**
 
@@ -986,7 +970,7 @@ fig = px.line(data_frame.iloc[:,3:].T, title="Markout Curves")
 fig.show()
 ```
 
-![copy icon](https://docs.analytics.tradefeedr.com/docs/img/octicons-16.svg#view-clippy)
+<figure><img src=".gitbook/assets/Markout_Curves.png" alt=""><figcaption></figcaption></figure>
 
 #### Market Share
 
@@ -1035,13 +1019,11 @@ data_frame = pd.DataFrame(response["result"])
 data_frame
 ```
 
-![copy icon](https://docs.analytics.tradefeedr.com/docs/img/octicons-16.svg#view-clippy)
-
 **Results**
 
 ***
 
-![api\_rfs\_bilateral\_market\_share\_ex3.png](https://docs.analytics.tradefeedr.com/docs/_images/api_rfs_bilateral/market_share/api_rfs_bilateral_market_share_ex3.png)
+<figure><img src=".gitbook/assets/image (11).png" alt=""><figcaption></figcaption></figure>
 
 **Figure**
 
@@ -1056,7 +1038,7 @@ fig = px.line(data_frame, x="Date", y="MarketShare", title="LP Market Share Anal
 fig.show()
 ```
 
-![copy icon](https://docs.analytics.tradefeedr.com/docs/img/octicons-16.svg#view-clippy)
+<figure><img src=".gitbook/assets/LP_Market_Share_Analysis_2.png" alt=""><figcaption></figcaption></figure>
 
 ### RFQ
 
@@ -1136,13 +1118,11 @@ data_frame["TradeTime"] = pd.to_datetime(data_frame["TradeTime"], unit="ms" if s
 data_frame
 ```
 
-![copy icon](https://docs.analytics.tradefeedr.com/docs/img/octicons-16.svg#view-clippy)
-
 **Results**
 
 ***
 
-![api\_rfq\_outrights\_execution\_history\_ex1.png](https://docs.analytics.tradefeedr.com/docs/_images/api_rfq/outrights/execution_history/api_rfq_outrights_execution_history_ex1.png)
+<figure><img src=".gitbook/assets/image (12).png" alt=""><figcaption></figcaption></figure>
 
 **Figure**
 
@@ -1160,7 +1140,7 @@ fig = px.line(data_frame, y="TradeQuantity", title="Daily Traded Volume")
 fig.show()
 ```
 
-![copy icon](https://docs.analytics.tradefeedr.com/docs/img/octicons-16.svg#view-clippy)
+<figure><img src=".gitbook/assets/TradeQuantity_by_Date_and_Symbol.png" alt=""><figcaption></figcaption></figure>
 
 #### Execution Stats
 
@@ -1226,8 +1206,6 @@ data_frame = pd.DataFrame(response["result"])
 data_frame
 ```
 
-![copy icon](https://docs.analytics.tradefeedr.com/docs/img/octicons-16.svg#view-clippy)
-
 **Results**
 
 ***
@@ -1236,7 +1214,7 @@ Most feilds return nulls as only `TradeQuantityUSD` and `Price` have a default a
 
 The user will have to create user defined functions, please refer to the User defined field names example in the [Outrights Execution Stats](https://docs.analytics.tradefeedr.com/docs/api_rfq/api_rfq_outrights_execution_stats.html) page.
 
-![api\_rfq\_swaps\_execution\_stats\_ex1.png](https://docs.analytics.tradefeedr.com/docs/_images/api_rfq/outrights/execution_stats/api_rfq_outrights_execution_stats_ex1.png)
+<figure><img src=".gitbook/assets/image (13).png" alt=""><figcaption></figcaption></figure>
 
 #### Opportunity Report
 
@@ -1299,13 +1277,11 @@ data_frame["TradeTime"] = pd.to_datetime(data_frame["TradeTime"], unit="ms" if s
 data_frame
 ```
 
-![copy icon](https://docs.analytics.tradefeedr.com/docs/img/octicons-16.svg#view-clippy)
-
 **Results**
 
 ***
 
-![api\_rfq\_outrights\_opportunity\_report\_ex3.png](https://docs.analytics.tradefeedr.com/docs/_images/api_rfq/outrights/opportunity_report/api_rfq_outrights_opportunity_report_ex3.png)
+<figure><img src=".gitbook/assets/image (14).png" alt=""><figcaption></figcaption></figure>
 
 **Figure**
 
@@ -1323,7 +1299,7 @@ fig = px.scatter(data_frame, x="TradeTime" , y="MissedByPIPS", title="Selecting 
 fig.show()
 ```
 
-![copy icon](https://docs.analytics.tradefeedr.com/docs/img/octicons-16.svg#view-clippy)
+<figure><img src=".gitbook/assets/Selecting_Losing_RFQs_only.png" alt=""><figcaption></figcaption></figure>
 
 #### Participation Report
 
@@ -1377,13 +1353,11 @@ data_frame = pd.DataFrame(response["result"])
 data_frame
 ```
 
-![copy icon](https://docs.analytics.tradefeedr.com/docs/img/octicons-16.svg#view-clippy)
-
 **Results**
 
 ***
 
-![api\_rfq\_outrights\_participation\_report\_ex1.png](https://docs.analytics.tradefeedr.com/docs/_images/api_rfq/outrights/participation_report/api_rfq_outrights_participation_report_ex1.png)
+<figure><img src=".gitbook/assets/image (15).png" alt=""><figcaption></figcaption></figure>
 
 **Figure**
 
@@ -1399,4 +1373,4 @@ fig = px.bar(data_frame, x="LP", y=["NumberOfWins", "ExpectedWins"],
 fig.show()
 ```
 
-![copy icon](https://docs.analytics.tradefeedr.com/docs/img/octicons-16.svg#view-clippy)<br>
+<figure><img src=".gitbook/assets/Number_of_Outright_RFQs_Won_by_LP.png" alt=""><figcaption></figcaption></figure>
