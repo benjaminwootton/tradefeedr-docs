@@ -1,61 +1,20 @@
 ---
-description: Welcome to the documentation site for the Tradefeedr Platform and APIs.
+icon: hand-wave
 metaLinks: {}
 ---
 
-# Tradefeedr Overview
+# Welcome To Tradefeedr Georgia
 
-### What Tradefeedr does
+Tradefeedr is a fintech company that builds a unified data and analytics platform for foreign-exchange (FX) trading and market participants. Their core offering is a secure, standardised API that aggregates trading data from multiple sources — liquidity providers, trading venues, ECNs, and more — and normalises it into a common format. This way, firms don’t need to wrestle with different data feeds and formats: they get a clean, “analysis-ready” data layer via Tradefeedr, whether they want raw transaction-level data or higher-level analytics. [tradefeedr.com+2tradefeedr.com+2](https://www.tradefeedr.com/platform?utm_source=chatgpt.com)
 
-Tradefeedr provides clients with easy access to their trading data.
+On top of providing the data infrastructure, Tradefeedr offers pre-built analytics tools and dashboards for things like transaction-cost analysis (TCA), best-execution metrics, liquidity management, and execution quality review. Users — whether buy-side institutions, brokers, or trading platforms — can also build custom analytics pipelines or dashboards using the platform’s APIs and built-in tools. The idea is to let clients focus on trading strategy and business decisions rather than the tedious work of data engineering and reconciliation. [tradefeedr.com+2PR Newswire+2](https://www.tradefeedr.com/platform?utm_source=chatgpt.com)
 
-Tradefeedr’s feature-rich data APIs let you build analyses and workflows that fit your needs. Optimised API calls make it easy to “slice and dice” data—extracting specific views for visualisation in data-science notebooks, or downloading data for use in internal systems for further analysis.
+Beyond private data analytics, Tradefeedr also enables collaborative data sharing and benchmarking. Firms can — with permission — pool anonymized data and compare execution performance, or benchmark liquidity providers against peers. This helps to create transparency across the FX market and fosters a more level playing field: instead of each party sitting on siloed data, there’s a shared, independent foundation for decision-making, performance measurement and dialogue.
 
-### Start here
+OH LA LA
 
-{% hint style="info" %}
-If you’re new to Tradefeedr, start with **Getting Started**.
-{% endhint %}
+Balraj likes Beer
 
-* [Getting Started](who-are-we.md): a quick-start tutorial that explains API structure, endpoints (think of these as functions), and how to run a custom query.
+Ben likes Whisky
 
-{% hint style="warning" %}
-The structure of each JSON query depends on the endpoint and the parameters it supports.
-{% endhint %}
-
-### API groups
-
-The examples in this documentation are organised into the following API groups:
-
-* **Algo API**
-* **RFS API**
-* **Bilateral RFS API**
-* **RFQ API**
-
-Where relevant, we show the Python code used to generate each result so you can copy and run it directly on the platform.
-
-### User Guide
-
-The [User Guide](https://docs.analytics.tradefeedr.com/docs/user_guide.html) provides an overview of the user guides available across the documentation.
-
-Use it when you know what you’re looking for and want to navigate directly to the right guide.
-
-### Analytics
-
-The [Analytics](https://docs.analytics.tradefeedr.com/docs/analytics.html) pages describe the available metrics and models, helping you build a comprehensive understanding of the APIs and how to interpret their output.
-
-For analytics walkthroughs, also refer to the [User Guide](https://docs.analytics.tradefeedr.com/docs/user_guide.html).
-
-### API (remote access)
-
-The [API](https://docs.analytics.tradefeedr.com/docs/api.html) page explains how to run the APIs remotely (outside the Tradefeedr platform), and provides an overview of API structure and its components.
-
-For endpoint-specific guides, refer to the [User Guide](https://docs.analytics.tradefeedr.com/docs/user_guide.html).
-
-### Platform guide
-
-This guide explains how the Tradefeedr platform works and the layers it contains.
-
-It is useful for understanding how the API, widgets, and template report notebooks are constructed, so you can customise or modify notebooks for your own needs.
-
-* [Platform Guide](https://docs.analytics.tradefeedr.com/docs/platform.html)
+Alexi likes Martini
