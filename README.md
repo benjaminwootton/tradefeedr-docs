@@ -13,8 +13,8 @@ Beyond private data analytics, Tradefeedr also enables collaborative data sharin
 
 OH LA LA
 
-Balraj likes milk
+Balraj likes vodka
 
-Ben likes water
+Ben likes martini
 
-Alexi likes coconut juice
+Alexi likes cheap wine
