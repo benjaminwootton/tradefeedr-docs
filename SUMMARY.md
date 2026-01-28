@@ -2,3 +2,4 @@
 
 * [Welcome To Tradefeedr Georgia](README.md)
 * [Who Are We](who-are-we.md)
+* [Tradefeedr APIS](tradefeedr-apis.md)
