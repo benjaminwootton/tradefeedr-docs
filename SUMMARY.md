@@ -1,5 +1,5 @@
 # Table of contents
 
-* [Welcome To Tradefeedr Georgia](README.md)
+* [Tradefeedr API Quickstart](README.md)
 * [Who Are We](who-are-we.md)
 * [Tradefeedr APIS](tradefeedr-apis.md)
