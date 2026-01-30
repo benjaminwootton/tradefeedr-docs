@@ -1,0 +1,4 @@
+Name,Description
+Mid,Tradefeedr Mid Price
+Time,Time for Tradefeedr Mid Price
+Symbol,Currency pair of ParentOrderID. For example: EURUSD

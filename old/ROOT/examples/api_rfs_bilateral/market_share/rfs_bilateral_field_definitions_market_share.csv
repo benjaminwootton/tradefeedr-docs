@@ -1,0 +1,6 @@
+Name,Description
+Date,Date corresponding to TradeTime
+CreatedBy,The user generating the report
+CreatedFor,Who the report is intended for and all other names are masked
+LP,Executing LP - counterparty to the trade.
+MarketShare,Percentage TradeQuantityUSD traded by an LP

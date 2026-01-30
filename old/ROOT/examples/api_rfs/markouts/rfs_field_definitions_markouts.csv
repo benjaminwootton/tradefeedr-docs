@@ -1,0 +1,5 @@
+Name,Description
+Markouts,Markout Curves starting at SpreadPNL at time zero. Those curve represent the PnL of counterparty
+MarkoutsAtZero,Markout Curves starting at 0 at time 0. Those curves represent price impact curves and do not include Spread Paid.
+MarkoutsAtZeroAverage,Average (as opposed to weighted average) version of MarkoutsAtZero.
+Volatilities,Standard deviationof each markout point for confidence intervals

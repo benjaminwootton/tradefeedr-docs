@@ -1,0 +1,10 @@
+Function,Description,Example
+sum,sum,"{""function"":""sum"",""var"":""TradeQuantityUSD"",""name"":""TotalVolume""},"
+avg,average,"{""function"":""avg"",""var"":""TradeQuantityUSD"",""name"":""AvgTradeSize""}"
+dev,standard deviation,"{""function"":""dev"",""var"":""TradeQuantityUSD"",""name"":""DevTotalSize""},"
+max,maximum,"{""function"":""max"",""var"":""TradeQuantityUSD"",""name"":""MaxTradeSize""},"
+min,minimum,"{""function"":""min"",""var"":""TradeQuantityUSD"",""name"":""MinTradeSize""},"
+count,count,"{""function"":""count"",""var"":""TradeQuantityUSD"",""name"":""NumberOfTrades""},"
+first,first observation,"{""function"":""first"",""var"":""TradeTime"",""name"":""FirstTime""}"
+last,last observation,"{""function"":""last"", ""var"":""TradeTime"",""name"":""LastTime""}"
+percentile,returns the x percentile of the specified column,"{""function"": ""percentile"", ""var"": ""SpreadPnLPM"", ""par"": 90}"

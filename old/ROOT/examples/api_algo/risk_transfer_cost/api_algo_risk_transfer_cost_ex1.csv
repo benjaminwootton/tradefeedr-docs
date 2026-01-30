@@ -1,0 +1,2 @@
+Date,Symbol,ArrivalTime,OrderQuantity,VolatilityRollingPct,VolatilityIntegratedPct,VolatilityRollingEMAPct,RiskTransferCostBPS
+2022-01-20,EURUSD,2022-01-20 11:38:48.725,100,0.04968070207045499,0.04972258395884351,0.05199842063362014,1.9806221927873329

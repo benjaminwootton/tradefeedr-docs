@@ -1,0 +1,55 @@
+* xref:index.adoc[Overview]
+
+* xref:getting_started.adoc[Getting Started]
+
+* xref:user_guide.adoc[User Guide]
+
+* xref:analytics.adoc[Analytics]
+** xref:analytics_algo.adoc[Algo]
+*** xref:analytics_risk_transfer_price.adoc[Risk Transfer Benchmark]
+** xref:analytics_rfs.adoc[RFS]
+** xref:analytics_rfq.adoc[RFQ]
+** xref:analytics_bilateral_sharing.adoc[RFS Bilateral Sharing]
+** xref:analytics_mid_price.adoc[Tradefeedr Mid Price]
+** xref:analytics_algo_peer_universe.adoc[Algo Peer Universe]
+
+* xref:api.adoc[API]
+
+** xref:api_algo/api_algo.adoc[Algo API]
+*** xref:api_algo/api_algo_parent_orders.adoc[Parent Orders]
+*** xref:api_algo/api_algo_parent_order_stats.adoc[Parent Orders Stats]
+*** xref:api_algo/api_algo_pnl_history.adoc[PnL History]
+*** xref:api_algo/api_algo_event_history.adoc[Event History]
+*** xref:api_algo/api_algo_market_data.adoc[Market Data]
+*** xref:api_algo/api_algo_markouts.adoc[Markouts]
+*** xref:api_algo/api_algo_execution_stats.adoc[Execution Stats]
+*** xref:api_algo/api_stats_risk_transfer_cost.adoc[Risk Transfer Cost]
+
+** xref:api_rfs/api_rfs.adoc[RFS  API]
+*** xref:api_rfs/api_rfs_summary_stats.adoc[Summary Stats]
+*** xref:api_rfs/api_rfs_execution_stats.adoc[Execution Stats]
+*** xref:api_rfs/api_rfs_execution_history.adoc[Execution History]
+*** xref:api_rfs/api_rfs_markouts.adoc[Markouts]
+
+** xref:api_rfs_bilateral/api_rfs_bilateral.adoc[RFS Bilateral API]
+*** xref:api_rfs_bilateral/api_rfs_bilateral_aggregates.adoc[Aggregates]
+*** xref:api_rfs_bilateral/api_rfs_bilateral_markouts.adoc[Markouts]
+*** xref:api_rfs_bilateral/api_rfs_bilateral_market_share.adoc[Market Share]
+
+** xref:api_rfq/api_rfq.adoc[RFQ API]
+*** xref:api_rfq/api_rfq_outrights_execution_history.adoc[Outrights Execution History]
+*** xref:api_rfq/api_rfq_swaps_execution_history.adoc[Swaps Execution History]
+*** xref:api_rfq/api_rfq_outrights_execution_stats.adoc[Outrights Execution Stats]
+*** xref:api_rfq/api_rfq_swaps_execution_stats.adoc[Swaps Execution Stats]
+*** xref:api_rfq/api_rfq_outrights_opportunity_report.adoc[Outrights Opportunity Report]
+*** xref:api_rfq/api_rfq_swaps_opportunity_report.adoc[Swaps Opportunity Report]
+*** xref:api_rfq/api_rfq_outrights_participation_report.adoc[Outrights Participation Report]
+*** xref:api_rfq/api_rfq_swaps_participation_report.adoc[Swaps Participation Report]
+
+** xref:functions.adoc[Functions]
+
+** xref:api_remote.adoc[API Remote Access]
+
+* xref:platform.adoc[Platform]
+
+* xref:faqs.adoc[FAQs]

@@ -1,0 +1,568 @@
+= Outrights Execution Stats
+
+== Introduction
+The `v1/fx/rfq-outrights/execution-stats` endpoint can be used to query across the entire execution history. 
+The query returns a table with the metrics (fields) selected by you as columns. The rows are defined by `groupby` statements. 
+
+
+You can review the outrights RFQs on a trade by trade level or an aggregated one by using the `groupby` query. You can review the `SecondBestPrice`,`BestBid`,`BestAsk` in the panel of `LP` s   and compare it to the `Price` that particular `LP` is quoting. This endpoint also displays the `NumLPs` that where in the stack at the time the outright RFQ was requested.
+
+The endpoint is designed to study general execution quality of the outrights RFQ trades. 
+
+== API Specification
+
+The API endpoint requires a JSON object representing query logic similar to SQL and containing the following fields:
+
+* `groupby` - which fields the results will be aggregated by
+* `select`  - which fields should be returned in the end result. For example `BestBid`
+* `filter`  - how the underlying data should be filtered
+
+== Example 
+**Note**: For display purposes we have limited the number of rows to 5 and and columns to 10.
+
+=== Only `LP` in `groupby`
+---
+**Note:** Aggregation is different depending on `select` and `groupby` fields. Only `TradeQuantityUSD` and `Price` have a default aggregation logic assigned to it.
+However, you may define a function in the select option to aggregate the fields as they wish to.
+
+In the example below we groupby `LP`, numerical fields such as `Price` return `None` as we aggregate across `Symbol` and `Side`. The aggregation of these results do not return a meaningful result.
+
+====
+[source,python]
+----
+include::example$api_rfq/outrights/execution_stats/api_rfq_outrights_execution_stats.py[]
+----
+====
+
+==== Results
+---
+image::api_rfq/outrights/execution_stats/api_rfq_outrights_execution_stats_ex1.png["api_rfq_swaps_execution_stats_ex1.png"]
+
+
+=== `LP`, `Symbol` and `Side` in `groupby`
+---
+**Note:** In this case as we are applying a `groupby` by `Symbol` and `Side`.`Price` is specified in `select`. It is returned as weighted average across `groupby` categories with `TradeQuantityUSD` being the weights. In this case the results are not `None` as we are not aggregating across different `Symbol` and `Side` values.
+
+`NumLPs` is still returned as `None` because you must define the aggregation logic.
+
+The following aggregation logic being applied:
+
+* `TradeQuantityUSD` -> sum (Highlighted by the case that TradeQuantityUSD and TotalVolume are equal)
+*  `Price` -> weighted average
+* `NumLPs`, `BestBid`, `BestAsk`, `SecondBestPrice` ->  `None`, you need to define  aggregation logic
+
+====
+[source,python]
+----
+include::example$api_rfq/outrights/execution_stats/api_rfq_outrights_execution_stats_ex2.py[]
+----
+====
+
+==== Results
+---
+image::api_rfq/outrights/execution_stats/api_rfq_outrights_execution_stats_ex2.png["api_rfq_swaps_execution_stats_ex2.png"]
+
+=== `TradeID` present in `groupby`
+---
+
+Applying a `groupby` with the field including a unique identifier results in no aggregation taking place, as the `groupby` field is unique to every row.
+
+====
+[source,python]
+----
+include::example$api_rfq/outrights/execution_stats/api_rfq_outrights_execution_stats_ex3.py[]
+----
+====
+==== Results
+---
+image::api_rfq/outrights/execution_stats/api_rfq_outrights_execution_stats_ex3.png["api_rfq_outrights_execution_stats_ex3.png"]
+
+==== Figure
+---
+
+====
+[source,python]
+----
+include::example$api_rfq/outrights/execution_stats/api_rfq_outrights_execution_stats_ex3_fig.py[]
+----
+====
+
+
+++++
+<div id='chart1'></div>
+<script>
+	d3.csv("../_attachments/api_rfq/outrights/execution_stats/raw/api_rfq_outrights_execution_stats_ex3.csv").then((data) => {
+    var new_data = data.slice(0,1);
+  
+		var trace1 = [{
+				x: new_data.map((row) => row.TradeID),
+				y: new_data.map((row) => row.Price),
+				type: 'lines',
+				mode: 'markers',
+				name: 'Price'
+		}]
+		
+        
+		var trace2 = [{
+				x: new_data.map((row) => row.TradeID),
+				y: new_data.map((row) => row.SecondBestPrice),
+				type: 'lines',
+				mode: 'markers',
+				name: 'SecondBestPrice'
+		}]
+		
+
+		var char_data = trace1.concat(trace2); 
+		
+		var layout = {
+					title: 'TradeID:Trade_00001 Price Comparison',
+					showlegend: true,
+					width: 750,
+					height: 500,
+                    xaxis: {
+                        title: {
+                          text: 'TradeID'
+                          }
+                        },
+                   
+                  yaxis: {
+                    title: {
+                      text: 'Price'
+                      }
+                    }                          
+					};
+
+
+		var output_div = document.getElementById('chart1')
+		Plotly.newPlot(output_div, char_data, layout, { margin: { t: 0 } },{displayModeBar: false})
+	})
+</script>
+++++
+
+
+=== User defined field names
+---
+You can apply aggregation functions (such as `sum`, `avg`, `dev`,`max`,`min`,`count`,`first` and `last`, aggregation functions documented towards the end of this document) to the same variable (`TradeQuantityUSD`). 
+
+In this example we conduct a `LP` analysis where we group the results by `LP` and `Symbol`. This is to review the differences in the traded volume and the price differentials between `LP` s.
+Below we have applied transformation functions to both the `Price` and `TradeQuantityUSD` fields.
+
+
+====
+[source,python]
+----
+include::example$api_rfq/outrights/execution_stats/api_rfq_outrights_execution_stats_ex4.py[]
+----
+====
+
+==== Results
+---
+image::api_rfq/outrights/execution_stats/api_rfq_outrights_execution_stats_ex4.png["api_rfq_swaps_execution_stats_ex4.png"]
+
+=== Available filter functions
+---
+
+The JSON Query accepts an array of filters which must be defined simultaneously. Negative operators such as `not_in` and `not_eq` allow to exclude specific sets of observations (for example outliers) from consideration. 
+
+Filters are frequently used in cases where we are dealing with big datasets: An example of this would be to select a sub-set of data and apply a set of aggregations to it.
+Example below filters the data for a sub-selection of currency pairs, dates, trade times, trade size over $ 10m where the `Side` is Sell `S`.
+
+
+====
+[source,python]
+----
+include::example$api_rfq/outrights/execution_stats/api_rfq_outrights_execution_stats_ex5.py[]
+----
+====
+
+==== Results
+---
+image::api_rfq/outrights/execution_stats/api_rfq_outrights_execution_stats_ex5.png["api_rfq_swaps_execution_stats_ex5.png", 250,100]
+
+=== Histogram and Aggregation for different buckets
+---
+Each `groupby` variable  is rounded down to the nearest multiple of `par`. 
+
+For example 11, 12, 19 all become 10 when par has a value of 10. These buckets are then used for aggregation across several buckets. The simplest example would be a histogram when the counts are presented. 
+
+
+====
+[source,python]
+----
+include::example$api_rfq/outrights/execution_stats/api_rfq_outrights_execution_stats_ex6.py[]
+----
+====
+
+==== Results
+---
+image::api_rfq/outrights/execution_stats/api_rfq_outrights_execution_stats_ex6.png["api_rfq_swaps_execution_stats_ex6.png", 350, 100]
+
+==== Figure
+---
+
+====
+[source,python]
+----
+include::example$api_rfq/outrights/execution_stats/api_rfq_outrights_execution_stats_ex6_fig.py[]
+----
+====
+
+
+++++
+<div id='chart2'></div>
+<script>
+	d3.csv("../_attachments/api_rfq/outrights/execution_stats/raw/api_rfq_outrights_execution_stats_ex6.csv").then((data) => {
+
+  
+		var trace1 = [{
+				x: data.map((row) => row.TradeQuantityUSD),
+				y: data.map((row) => row.Price),
+                mode: 'markers',
+                marker: {
+                size: data.map((row) => row.TradeQuantityUSD/1000000),
+                },
+				type: 'scatter',
+				name: 'Price'
+		}]
+		
+        
+		var char_data = trace1; 
+		
+		var layout = {
+					title: 'Bubble plot of Price and TradeQuantityUSD',
+					showlegend: true,
+					width: 750,
+					height: 500,
+                    xaxis: {
+                        title: {
+                          text: 'TradeQuantityUSD'
+                          }
+                        },
+                   
+                  yaxis: {
+                    title: {
+                      text: 'Price'
+                      }
+                    }                          
+					};                    
+
+
+		var output_div = document.getElementById('chart2')
+		Plotly.newPlot(output_div, char_data, layout, { margin: { t: 0 } },{displayModeBar: false})
+	})
+</script>
+++++
+
+=== Histogram (Buckets)
+---
+Group modification function `hist` (stands for histogram buckets) splits the incoming variable range (`TradeQuantityUSD` in the below example) into a number of buckets of the same size.  Variables in the `select` operator are aggregated within those buckets. 
+
+**Note**: The resulting column created by applying `hist` in the groupby, returns the middle value of the bucket.
+
+==== Histogram (Buckets) example 1
+---
+`hist` function returns the middle value of the bucket.
+
+====
+[source,python]
+----
+include::example$api_rfq/outrights/execution_stats/api_rfq_outrights_execution_stats_ex7.py[]
+----
+====
+
+==== Results
+---
+image::api_rfq/outrights/execution_stats/api_rfq_outrights_execution_stats_ex7.png["api_rfq_swaps_execution_stats_ex7.png"]
+
+==== Figure
+---
+
+====
+[source,python]
+----
+include::example$api_rfq/outrights/execution_stats/api_rfq_outrights_execution_stats_ex7_fig.py[]
+----
+====
+
+
+++++
+<div id='chart3'></div>
+<script>
+	d3.csv("../_attachments/api_rfq/outrights/execution_stats/raw/api_rfq_outrights_execution_stats_ex7.csv").then((data) => {
+
+  
+		var trace1 = [{
+				x: data.map((row) => row.TradeQuantityUSD),
+				y: data.map((row) => row.Count),
+				type: 'bar',
+				name: 'Count'
+		}]
+		
+        
+		var char_data = trace1; 
+		
+		var layout = {
+					title: 'TradeQuantityUSD frequency plot',
+					showlegend: true,
+					width: 750,
+					height: 500,
+                    xaxis: {
+                        title: {
+                          text: 'TradeQuantityUSD'
+                          }
+                        },
+                   
+                  yaxis: {
+                    title: {
+                      text: 'Count'
+                      }
+                    }                          
+					};                         
+
+		var output_div = document.getElementById('chart3')
+		Plotly.newPlot(output_div, char_data, layout, { margin: { t: 0 } },{displayModeBar: false})
+	})
+</script>
+++++
+
+
+==== Histogram (Buckets) example 2
+---
+`hist_range` function returns the range of the bucket.
+
+====
+[source,python]
+----
+include::example$api_rfq/outrights/execution_stats/api_rfq_outrights_execution_stats_ex9.py[]
+----
+====
+
+==== Results
+---
+image::api_rfq/outrights/execution_stats/api_rfq_outrights_execution_stats_ex9.png["api_rfq_swaps_execution_stats_ex9.png"]
+
+
+==== Histogram (Buckets) example 3
+---
+`hist_index` function returns the index of the bucket.
+
+====
+[source,python]
+----
+include::example$api_rfq/outrights/execution_stats/api_rfq_outrights_execution_stats_ex10.py[]
+----
+====
+
+==== Results
+---
+image::api_rfq/outrights/execution_stats/api_rfq_outrights_execution_stats_ex10.png["api_rfq_swaps_execution_stats_ex10.png",350,100]
+
+
+
+=== Percentile 
+---
+`percentile` returns the x percentile of the specified column.
+
+In this example we return the value corresponding to the 25th, 50th, 75th, 90th and 100th percentile of `Price`.
+You can query various percentiles in the `select` parameter and analyse distribution of the chosen metric.
+
+**Warning**: This function is computationally intensive running on a large data set will results in a slower response time.
+
+====
+[source,python]
+----
+include::example$api_rfq/outrights/execution_stats/api_rfq_outrights_execution_stats_ex11.py[]
+----
+====
+
+==== Results
+---
+image::api_rfq/outrights/execution_stats/api_rfq_outrights_execution_stats_ex11.png["api_rfq_swaps_execution_stats_ex11.png"]
+
+==== Figure
+---
+
+
+====
+[source,python]
+----
+include::example$api_rfq/outrights/execution_stats/api_rfq_outrights_execution_stats_ex11_fig.py[]
+----
+====
+
+
+++++
+<div id='chart4'></div>
+<script>
+	d3.csv("../_attachments/api_rfq/outrights/execution_stats/raw/api_rfq_outrights_execution_stats_ex11.csv").then((data) => {
+
+var selected = 'EURUSD';
+		const data_eurusd = data.filter(({
+		  Symbol
+		}) => selected.includes(Symbol));  
+        
+var selected = 'B';
+		const data_eurusd_buy = data_eurusd.filter(({
+		  Side
+		}) => selected.includes(Side));
+        
+		var trace1 = [{
+				x: data_eurusd_buy.map((row) => row.LP),
+				y: data_eurusd_buy.map((row) => row.Price),
+				mode: 'markers',
+				name: 'Price'
+		}]
+		
+        
+		var trace2 = [{
+				x: data_eurusd_buy.map((row) => row.LP),
+				y: data_eurusd_buy.map((row) => row.Price_Pct90),
+				mode: 'markers',
+				name: 'Price_Pct90'
+		}]
+		           
+		var char_data = trace1.concat(trace2);
+		
+		var layout = {
+					title: 'Buying EURUSD Price by LP',
+					showlegend: true,
+					width: 750,
+					height: 500,
+                    xaxis: {
+                        title: {
+                          text: 'LP'
+                          }
+                        },
+                   
+                  yaxis: {
+                    title: {
+                      text: 'Price'
+                      }
+                    }                          
+					};                      
+
+
+		var output_div = document.getElementById('chart4')
+		Plotly.newPlot(output_div, char_data, layout, { margin: { t: 0 } },{displayModeBar: false})
+	})
+</script>
+++++
+
+
+++++
+<div id='chart5'></div>
+<script>
+	d3.csv("../_attachments/api_rfq/outrights/execution_stats/raw/api_rfq_outrights_execution_stats_ex11.csv").then((data) => {
+
+var selected = 'EURUSD';
+		const data_eurusd = data.filter(({
+		  Symbol
+		}) => selected.includes(Symbol));  
+        
+var selected = 'S';
+		const data_eurusd_sell = data_eurusd.filter(({
+		  Side
+		}) => selected.includes(Side));
+        
+		var trace1 = [{
+				x: data_eurusd_sell.map((row) => row.LP),
+				y: data_eurusd_sell.map((row) => row.Price),
+                mode: 'markers',
+				name: 'Price'
+		}]
+		
+        
+           
+		var trace2 = [{
+				x: data_eurusd_sell.map((row) => row.LP),
+				y: data_eurusd_sell.map((row) => row.Price_Pct90),
+                mode: 'markers',
+				name: 'Price_Pct90'
+		}]
+		           
+    
+		var char_data = trace1.concat(trace2);
+		
+		var layout = {
+					title: 'Selling EURUSD Price by LP',
+					showlegend: true,
+					width: 750,
+					height: 500,
+                    xaxis: {
+                        title: {
+                          text: 'LP'
+                          }
+                        },
+                   
+                  yaxis: {
+                    title: {
+                      text: 'Price'
+                      }
+                    }                          
+					};                      
+
+
+		var output_div = document.getElementById('chart5')
+		Plotly.newPlot(output_div, char_data, layout, { margin: { t: 0 } },{displayModeBar: false})
+	})
+</script>
+++++
+
+=== Rank Percentile 
+---
+The `rank_percentile` function transforms the target column into a value in the range of [0;100].
+
+This is applied in the `filter` option. You can use this function to apply an outlier filtering. `Price` results are filtered to only select values which fall within the 10th-90th percentile range.
+
+**Warning**: This function is computationally intensive running on a large data set will results in a slower response time.
+
+====
+[source,python]
+----
+include::example$api_rfq/outrights/execution_stats/api_rfq_outrights_execution_stats_ex12.py[]
+----
+====
+
+==== Results
+---
+image::api_rfq/outrights/execution_stats/api_rfq_outrights_execution_stats_ex12.png["api_rfq_swaps_execution_stats_ex12.png", 350, 100]
+
+
+=== `Price` deltas (minus transformation)
+---
+Applying the `minus` transformation to compute the difference between `Price` and `BestBid`.
+This example filters the data to only include results where the difference between `Price` and `BestBid` is between 0 and 5bps.
+
+====
+[source,python]
+----
+include::example$api_rfq/outrights/execution_stats/api_rfq_outrights_execution_stats_ex13.py[]
+----
+====
+
+==== Results
+---
+image::api_rfq/outrights/execution_stats/api_rfq_outrights_execution_stats_ex13.png["api_rfq_swaps_execution_stats_ex13.png"]
+
+== Field Definitions
+
+[%header,format=csv, cols=["60%", "40%"]]
+|===
+include::example$api_rfq/outrights/execution_history/rfq_field_definitions_execution_history.csv[]
+|===
+
+=== Aggreggation Functions (for `select` if `groupby` is present)
+---
+
+[%header,format=csv, cols=["60%", "40%"]]
+|===
+include::example$api_rfq/outrights/execution_stats/rfq_field_definitions_agg_functions.csv[]
+|===
+
+=== Modification Functions (for `filter` and `groupby` )
+---
+
+[%header,format=csv, cols=["60%", "40%"]]
+|===
+include::example$api_rfq/outrights/execution_stats/rfq_field_definitions_modif_functions.csv[]
+|===

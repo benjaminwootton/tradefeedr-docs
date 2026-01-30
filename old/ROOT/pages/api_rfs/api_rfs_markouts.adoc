@@ -1,0 +1,539 @@
+= Markouts
+
+== Introduction
+This `v1/fx/rfs/markouts` endpoint returns the markout curves information in a number of tables.
+
+These tables include: 
+
+* `Markout` - Markout Curves starting at SpreadPNL at time zero. Those curve represent the PnL of counterparty
+* `MarkoutsAtZero`  - Markout Curves starting at 0 at time 0. Those curves represent price impact curves and do not include Spread Paid.
+* `MarkoutsAtZeroAverage` - Average (as opposed to weighted average) version of MarkoutsAtZero. 
+* `Volatilities` - Standard deviations of each markout point for confidence intervals
+
+Mark-out Curves represent market dynamics before and after each trading event (fill, reject or order placement). 
+This market dynamics is typically aggregated across different categories such as `Symbol` `LP`, 
+and `ExecVenue` but it is possible to extract markout curves for each trading event as well.
+
+== API Specification
+
+The API endpoint requires a JSON object representing query logic similiar to SQL and containing the following fields:
+
+* `groupby` - what fields to aggregate markouts by
+* `select`  - which fields should be returned in the end result
+* `filter`  - how the underlying data should be filtered
+
+
+== Markout Definitions 
+
+=== `Markout`
+---
+Mark-out Curves represent PnL (in dollar/m traded) earned by the counterparty of your trades. Market Impact Curves represent your PnL from inception (using mid and ignoring the spread). Tradefeedr supports both.    
+
+Mark-out curves are calculated for each trade and aggregated across by `LP`, `Account`, `Symbol` traded etc. The aggregation weights for are proportional to Trade sizes.  Direction is adjusted for Side (buy or sell)
+
+Mark-out curve at time 0 represents Spread paid on a trade (in dollar/m) - so called Inception PnL for market maker.
+Mark-out curve at 30s represents PnL left for the market maker 30s after the trade is done. The PnL is marked-to-market using Tradefeedr mid.              
+
+For example, if spread paid is 25 dollar/m and mid-price move is 10 dollar/m against LP then the mark-out curve will show 15 dollar/m. 
+
+Effectively, mark-out curve at time X can be thought as an approximation of market maker PnL if the trade is covered at time X at mid.
+Typically (but not always) mark-out curves are downward sloping meaning that less spread PnL is left LP as time goes by. 
+
+Downward sloping mark-out curve means that your trades have positive momentum, spot goes UP after BUY trade and DOWN after SELL. 
+
+We also present dynamics before the trade time.  It has the same interpretation. Downward sloping curve from -10s to 0 means spot was going UP before BUY trade happened (DOWN before sell trade happened). 
+
+=== `MarkoutAtZero` 
+---
+
+These markout represnt your PnL marked to market at the mid Upward sloping markout curves mean your trades have positive momentum.
+
+=== `MarkoutAtZeroAverage` 
+---
+
+
+These markout represent your PnL marked to market at the mid. Unlike `MarkoutAtZero` the individual trade markouts are aggregated as average as opposed to weighted average. Upward sloping markout curves mean your trades have positive momentum.
+
+===  `Volatility` 
+---
+
+These are the standard deviations of the `Markout` curves at the point in time.
+
+== Examples 
+
+**Note**: For display purposes we have limited the number of rows to 5 and and columns to 10.
+
+=== By LP
+---
+
+====
+[source,python]
+----
+include::example$api_rfs/markouts/api_rfs_markouts.py[]
+----
+====
+
+==== Results
+---
+image::api_rfs/markouts/api_rfs_markouts_ex1.png["api_rfs_markouts_ex1.png"]
+
+
+
+==== Figure
+---
+
+====
+[source,python]
+----
+include::example$api_rfs/markouts/api_rfs_markouts_ex1_fig.py[]
+----
+====
+++++
+<div id='chart'></div>
+<script>
+	d3.csv("../_attachments/api_rfs/markouts/api_rfs_markouts_ex1_mod.csv").then((data) => {
+		var trace1 = [{
+				x: data.map((row) => row.Time),
+				y: data.map((row) => row.LP1),
+				type: 'line',
+				name: 'LP1'
+		}]
+		
+		var trace2 = [{
+				x: data.map((row) => row.Time),
+				y: data.map((row) => row.LP2),
+				type: 'line',
+				name: 'LP2'
+		}]
+		
+		var trace3 = [{
+				x: data.map((row) => row.Time),
+				y: data.map((row) => row.LP3),
+				type: 'line',
+				name: 'LP3'
+		}]
+		
+		var trace4 = [{
+				x: data.map((row) => row.Time),
+				y: data.map((row) => row.LP4),
+				type: 'line',
+				name: 'LP4'
+		}]
+        
+		var trace5 = [{
+				x: data.map((row) => row.Time),
+				y: data.map((row) => row.LP5),
+				type: 'line',
+				name: 'LP5'
+		}]
+        
+		var trace6 = [{
+				x: data.map((row) => row.Time),
+				y: data.map((row) => row.LP6),
+				type: 'line',
+				name: 'LP6'
+		}]
+		
+		var char_data = trace1.concat(trace2,trace3,trace4, trace5, trace6); 
+		
+		var layout = {
+					title: 'Markouts by LP',
+					showlegend: true,
+					width: 750,
+					height: 500,
+                    xaxis: {
+                        title: {
+                          text: 'Time'
+                          }
+                        },
+                  
+                  yaxis: {
+                    title: {
+                      text: 'Markouts'
+                      }                    
+                    }                    
+					};
+
+
+		var output_div = document.getElementById('chart')
+		Plotly.newPlot(output_div, char_data, layout, { margin: { t: 0 } },{displayModeBar: false})
+	})
+</script>
+++++
+
+===  By LP (Volatility Curves)
+---
+====
+[source,python]
+----
+include::example$api_rfs/markouts/api_rfs_markouts_ex2.py[]
+----
+====
+
+==== Results
+---
+image::api_rfs/markouts/api_rfs_markouts_ex2.png["api_rfs_markouts_ex2.png"]
+
+==== Figure
+---
+
+====
+[source,python]
+----
+include::example$api_rfs/markouts/api_rfs_markouts_ex2_fig.py[]
+----
+====
+++++
+<div id='chart1'></div>
+<script>
+	d3.csv("../_attachments/api_rfs/markouts/api_rfs_markouts_ex2_mod.csv").then((data) => {
+		var trace1 = [{
+				x: data.map((row) => row.Time),
+				y: data.map((row) => row.LP1),
+				type: 'line',
+				name: 'LP1'
+		}]
+		
+		var trace2 = [{
+				x: data.map((row) => row.Time),
+				y: data.map((row) => row.LP2),
+				type: 'line',
+				name: 'LP2'
+		}]
+		
+		var trace3 = [{
+				x: data.map((row) => row.Time),
+				y: data.map((row) => row.LP3),
+				type: 'line',
+				name: 'LP3'
+		}]
+		
+		var trace4 = [{
+				x: data.map((row) => row.Time),
+				y: data.map((row) => row.LP4),
+				type: 'line',
+				name: 'LP4'
+		}]
+        
+		var trace5 = [{
+				x: data.map((row) => row.Time),
+				y: data.map((row) => row.LP5),
+				type: 'line',
+				name: 'LP5'
+		}]
+        
+		var trace6 = [{
+				x: data.map((row) => row.Time),
+				y: data.map((row) => row.LP6),
+				type: 'line',
+				name: 'LP6'
+		}]
+		
+		var char_data = trace1.concat(trace2,trace3,trace4, trace5, trace6); 
+		
+		var layout = {
+					title: 'Volatilities by LP',
+					showlegend: true,
+					width: 750,
+					height: 500,
+                    xaxis: {
+                        title: {
+                          text: 'Time'
+                          }
+                        },
+                  
+                  yaxis: {
+                    title: {
+                      text: 'Volatilities'
+                      }                    
+                    }                      
+					};
+
+
+		var output_div = document.getElementById('chart1')
+		Plotly.newPlot(output_div, char_data, layout, { margin: { t: 0 } },{displayModeBar: false})
+	})
+</script>
+++++
+
+
+=== By LP, Symbol and execution venue
+---
+In this example we query for the impact curves `MarkoutsAtZero` and `MarkoutsAtZeroAverage`. 
+
+Then we conduct an LP and venue analysis for EURUSD for trades greater than $1M in size.
+
+====
+[source,python]
+----
+include::example$api_rfs/markouts/api_rfs_markouts_ex3.py[]
+----
+====
+
+==== Results
+---
+image::api_rfs/markouts/api_rfs_markouts_ex3.png["api_rfs_markouts_ex3.png"]
+
+
+=== Figures
+---
+
+====
+[source,python]
+----
+include::example$api_rfs/markouts/api_rfs_markouts_ex3_fig.py[]
+----
+====
+
+++++
+<div id='chart2'></div>
+<script>
+	d3.csv("../_attachments/api_rfs/markouts/api_rfs_markouts_ex3_mod_atzero.csv").then((data) => {
+		var trace1 = [{
+				x: data.map((row) => row.Time),
+				y: data.map((row) => row.LP1),
+				type: 'line',
+				name: 'LP1'
+		}]
+		
+		var trace2 = [{
+				x: data.map((row) => row.Time),
+				y: data.map((row) => row.LP2),
+				type: 'line',
+				name: 'LP2'
+		}]
+		
+		var trace3 = [{
+				x: data.map((row) => row.Time),
+				y: data.map((row) => row.LP3),
+				type: 'line',
+				name: 'LP3'
+		}]
+		
+		var trace4 = [{
+				x: data.map((row) => row.Time),
+				y: data.map((row) => row.LP4),
+				type: 'line',
+				name: 'LP4'
+		}]
+        
+		var trace5 = [{
+				x: data.map((row) => row.Time),
+				y: data.map((row) => row.LP5),
+				type: 'line',
+				name: 'LP5'
+		}]
+        
+		var trace6 = [{
+				x: data.map((row) => row.Time),
+				y: data.map((row) => row.LP6),
+				type: 'line',
+				name: 'LP6'
+		}]
+		
+		var char_data = trace1.concat(trace2,trace3,trace4, trace5, trace6); 
+		
+		var layout = {
+					title: 'MarkoutsAtZero by LP',
+					showlegend: true,
+					width: 750,
+					height: 500,
+                    xaxis: {
+                        title: {
+                          text: 'Time'
+                          }
+                        },
+                  
+                  yaxis: {
+                    title: {
+                      text: 'MarkoutsAtZero'
+                      }                    
+                    }                            
+					};
+
+
+		var output_div = document.getElementById('chart2')
+		Plotly.newPlot(output_div, char_data, layout, { margin: { t: 0 } },{displayModeBar: false})
+	})
+</script>
+++++
+
+++++
+<div id='chart3'></div>
+<script>
+	d3.csv("../_attachments/api_rfs/markouts/api_rfs_markouts_ex3_mod_avg.csv").then((data) => {
+		var trace1 = [{
+				x: data.map((row) => row.Time),
+				y: data.map((row) => row.LP1),
+				type: 'line',
+				name: 'LP1'
+		}]
+		
+		var trace2 = [{
+				x: data.map((row) => row.Time),
+				y: data.map((row) => row.LP2),
+				type: 'line',
+				name: 'LP2'
+		}]
+		
+		var trace3 = [{
+				x: data.map((row) => row.Time),
+				y: data.map((row) => row.LP3),
+				type: 'line',
+				name: 'LP3'
+		}]
+		
+		var trace4 = [{
+				x: data.map((row) => row.Time),
+				y: data.map((row) => row.LP4),
+				type: 'line',
+				name: 'LP4'
+		}]
+        
+		var trace5 = [{
+				x: data.map((row) => row.Time),
+				y: data.map((row) => row.LP5),
+				type: 'line',
+				name: 'LP5'
+		}]
+        
+		var trace6 = [{
+				x: data.map((row) => row.Time),
+				y: data.map((row) => row.LP6),
+				type: 'line',
+				name: 'LP6'
+		}]
+		
+		var char_data = trace1.concat(trace2,trace3,trace4, trace5, trace6); 
+		
+		var layout = {
+					title: 'MarkoutsAtZeroAverage  by LP',
+					showlegend: true,
+					width: 750,
+					height: 500,
+                    xaxis: {
+                        title: {
+                          text: 'Time'
+                          }
+                        },
+                  
+                  yaxis: {
+                    title: {
+                      text: 'MarkoutsAtZeroAverage'
+                      }                    
+                    }                     
+					};
+
+
+		var output_div = document.getElementById('chart3')
+		Plotly.newPlot(output_div, char_data, layout, { margin: { t: 0 } },{displayModeBar: false})
+	})
+</script>
+++++
+
+
+=== By LP, Symbol and execution venue with select filter
+---
+In this example we query for the PnL curves `Markouts` and select the points in time of the markout curve.
+
+====
+[source,python]
+----
+include::example$api_rfs/markouts/api_rfs_markouts_ex4.py[]
+----
+====
+==== Results
+---
+image::api_rfs/markouts/api_rfs_markouts_ex4.png["api_rfs_markouts_ex4.png"]
+
+==== Figure
+---
+
+====
+[source,python]
+----
+include::example$api_rfs/markouts/api_rfs_markouts_ex4_fig.py[]
+----
+====
+
+++++
+<div id='chart4'></div>
+<script>
+	d3.csv("../_attachments/api_rfs/markouts/api_rfs_markouts_ex4_mod.csv").then((data) => {
+		var trace1 = [{
+				x: data.map((row) => row.Time),
+				y: data.map((row) => row.LP1),
+                mode: 'lines',
+				type: 'lines',
+				name: 'LP1'
+		}]
+		
+		var trace2 = [{
+				x: data.map((row) => row.Time),
+				y: data.map((row) => row.LP2),
+                mode: 'lines',
+				type: 'lines',
+				name: 'LP2'
+		}]
+		
+		var trace3 = [{
+				x: data.map((row) => row.Time),
+				y: data.map((row) => row.LP3),
+                mode: 'lines',
+				type: 'lines',
+				name: 'LP3'
+		}]
+		
+		var trace4 = [{
+				x: data.map((row) => row.Time),
+				y: data.map((row) => row.LP4),
+                mode: 'lines',
+				type: 'lines',
+				name: 'LP4'
+		}]
+        
+		var trace5 = [{
+				x: data.map((row) => row.Time),
+				y: data.map((row) => row.LP5),
+                mode: 'lines',
+				type: 'lines',
+				name: 'LP5'
+		}]
+        
+		
+		var char_data = trace1.concat(trace2,trace3,trace4, trace5); 
+		
+		var layout = {
+					title: 'Markout Curve',
+					showlegend: true,
+					width: 750,
+					height: 500,
+                    xaxis: {
+                        title: {
+                          text: 'Time'
+                          }
+                        },
+                  
+                  yaxis: {
+                    title: {
+                      text: 'Markouts'
+                      }                    
+                    }                              
+					};
+
+
+		var output_div = document.getElementById('chart4')
+		Plotly.newPlot(output_div, char_data, layout, { margin: { t: 0 } },{displayModeBar: false})
+	})
+</script>
+++++
+
+
+== Field Definitions
+
+Refer to xref:analytics_rfs.adoc[Analytics RFS] page for details and formula.
+
+[%header,format=csv]
+|===
+include::example$api_rfs/markouts/rfs_field_definitions_markouts.csv[]
+|===

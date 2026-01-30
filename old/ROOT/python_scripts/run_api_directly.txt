@@ -1,0 +1,37 @@
+mark@Tradefeedr-2:~$ cd Tradefeedr-Api/src/main/resources/clientScripts
+mark@Tradefeedr-2:~/Tradefeedr-Api/src/main/resources/clientScripts$ python3
+
+
+from tf_api_device import TfApiDevice
+tf_api_device = TfApiDevice()
+tf_api_device.request_login()
+
+tf_api_device.request_token()
+
+import pandas as pd
+endpoint  = "v1/fx/algo/pnl-history"
+options = {
+      "filter": [
+          {"function": "eq", "var": "ParentOrderID", "par": "lim_20180904-A00"}
+      ]
+}
+
+response = tf_api_device.query_api(endpoint,options)
+data_frame = pd.DataFrame(response['result'])
+data_frame.head()
+data_frame["TradeTime"] = pd.to_datetime(data_frame["TradeTime"], unit="ms")
+
+data_frame['ArrivalTime'] = pd.to_datetime(data_frame['ArrivalTime'], unit='ms')
+
+
+data_frame  = data_frame.sort_values(by = "ArrivalTime", ascending = False)
+
+data_frame.to_csv("/home/dilan/Tradefeedr-Documentation/modules/ROOT/examples/api_algo/pnl_history/raw/api_algo_pnl_history_ex2.csv",index =False)
+data_frame.to_csv("/home/dilan/Tradefeedr-Documentation/modules/ROOT/examples/api_algo/pnl_history/api_algo_pnl_history_ex2.csv",index =False)
+
+response = tf_api_device.query_api(endpoint,options)
+data_frame = pd.DataFrame(response['result'])
+data_frame.head()
+
+data_frame.to_csv("/home/dilan/Tradefeedr-Documentation/modules/ROOT/examples/api_rfs_bilateral/market_share/raw/api_rfs_bilateral_market_share_ex3.csv",index =False)
+data_frame.head().to_csv("/home/dilan/Tradefeedr-Documentation/modules/ROOT/examples/api_rfs_bilateral/market_share/api_rfs_bilateral_market_share_ex3.csv",index =False)

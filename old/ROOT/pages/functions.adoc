@@ -1,0 +1,162 @@
+= Functions
+
+== Introduction
+
+This page provides you an overview of the different functions available to you when querying the Tradefeedr APIs. 
+
+* The aggreggation functions are applied to the `select` statements in the query. You need to make sure in the query you have selected, `select` and `groupby` parameters. If `groupby` is not present no aggregation takes place.
+
+* The modification functions are applied to the `filter` and `groupby` statements in the query.
+
+* The transformation functions can be used in the `filter`, `select` and `groupby`.
+
+These functions allow you to create user defined field names.
+
+Note that the modifcation and transformation functions are many to many functions and applied before aggregation.
+
+
+== Aggreggation Functions
+The table below lists all the available aggregation functions that you can use.
+There are also examples in the table below for you to use and modify.
+They are used in the select query if a `groupby` is present.
+
+
+[%header,format=csv]
+|===
+include::example$api_algo/execution_stats/field-definitions_execution_stats_agg_functions.csv[]
+|===
+
+
+== Modification Functions
+These are used in the `filter` and `groupby` parameters.
+
+[%header,format=csv]
+|===
+include::example$api_algo/execution_stats/field-definitions_execution_stats_modif_function.csv[]
+|===
+
+
+== Transformation Functions
+Used to transform the column type. Commonly used on time columns in the `filter` and `select` parameters.
+
+[%header,format=csv]
+|===
+include::example$api_algo/execution_stats/field-definitions_execution_stats_transformation_function.csv[]
+|===
+
+
+==  Algo API Example
+
+
+=== Aggregation and Modification Functions
+---
+
+You can apply aggregation functions (such as `sum`, `avg`, `dev`,`max`,`min`,`count`,`first` and `last`) to the same variable (`TradeQuantityUSD`). 
+In this case you can name the resulting column as you wish.
+
+=====
+[source,python]
+----
+include::example$api_algo/execution_stats/api_algo_execution_stats_ex7.py[]
+----
+=====
+
+==== Results
+---
+image::api_algo/execution_stats/api_algo_execution_stats_ex7.png["api_algo_execution_stats_ex7.png"]
+
+
+=== Aggregation, Modification and Transformation Functions
+---
+
+The `bar` modification function is applied alongside the `minute` transformation function.
+This allows you to analyse intraday execution pattern.
+
+If you seek to view the intraday execution pattern in different time zone. For example, London time use the `minute_london` transformation function instead.
+
+The `ArrivalTime` variable in the `groupby` below is transformed in `HH:MM` format and is then rounded down to the nearest multiple of `par`. 
+
+For example, 11:20 becomes 11:00. 
+The buckets such as 11:00 (including all times from 11:00 and 11:29) and 11:30 (including all times from 11:30 to 11:59) are then used for aggregation.  
+
+
+====
+[source,python]
+----
+include::example$api_algo/parent_order_stats/api_algo_parent_order_stats_ex10.py[]
+----
+====
+
+== RFS API Examples
+
+
+=== Aggregation and Modification Functions
+---
+
+Group modification function `hist` (stands for histogram buckets) splits the incoming variable range (`DecayPM1m` in the below example) into a number of buckets of the same size.  Variables in the `select` operator are aggregated within those buckets. 
+
+**Note**: The resulting column created by applying `hist` in the groupby, returns the middle value of the bucket.
+
+=====
+[source,python]
+----
+include::example$api_rfs/execution_stats/api_rfs_execution_stats_ex8.py[]
+----
+=====
+
+==== Results
+---
+image::api_rfs/execution_stats/api_rfs_execution_stats_ex8.png["api_rfs_execution_stats_ex8.png",400,100]
+
+=== Modification and Transformation Functions
+---
+
+The `rank_percentile` function transforms the target column into a value in the range of [0;100].
+
+This is applied in the `filter` option. The user can use this function to apply an outlier filtering. `DecayPM1s` results are filtered to only select values which fall within the 10th-90th percentile range.
+
+**Warning**: This function is computationally intensive running on a large data set will results in a slower response time.
+
+=====
+[source,python]
+----
+include::example$api_rfs/execution_stats/api_rfs_execution_stats_ex7.py[]
+----
+=====
+
+==== Results
+---
+image::api_rfs/execution_stats/api_rfs_execution_stats_ex7.png["api_rfs_execution_stats_ex7.png",300,100]
+
+
+=== Time Transformation Functions
+---
+In the below example we show how to transform `TradeTime` into London date, New York date and trading date.
+The time transformations can be applied to Algo and RFQ APIs as well. 
+
+=====
+[source,python]
+----
+include::example$api_rfs/execution_stats/api_rfs_execution_stats_ex9.py[]
+----
+=====
+
+
+== RFQ API Example
+
+
+=== Aggregation, Modification and Transformation Functions
+---
+
+Similar to the Algo example above but we have applied a transformation function to the `TradeTime` column.
+
+====
+[source,python]
+----
+include::example$api_rfq/outrights/execution_stats/api_rfq_outrights_execution_stats_ex4.py[]
+----
+====
+
+==== Results
+---
+image::api_rfq/outrights/execution_stats/api_rfq_outrights_execution_stats_ex4.png["api_rfq_swaps_execution_stats_ex4.png"]

@@ -1,0 +1,196 @@
+= Event History
+
+== Introduction
+
+The `v1/fx/algo/event-history` endpoint allows selection of multiple metrics (fields) such as spread paid and market impact at different time horizons (corresponding to each child order event available in the Tradefeedr database).
+
+It allows you to query all trading events for a given `ParentOrderID`. 
+It should be used when you require a detailed analysis and understanding of a specific `ParentOrderID` execution profile.
+
+
+== API Specification
+The API endpoint requires a JSON object representing query logic similar to SQL and containing the following fields:
+
+* `select`  - which fields should be returned in the end result. For example `SpreadPnLPM`. The full list of possible values is given below 
+* `filter`  - how the underlying data should be filtered
+
+**Note:** `ParentOrderID` is the only valid filter field for this endpoint
+
+== Example 
+**Note**: For display purposes we have limited the number of rows to 5 and and columns to 10.
+
+=== Event History for a ParentOrderID
+---
+
+====
+[source,python]
+----
+include::example$api_algo/event_history/api_algo_event_history.py[]
+----
+====
+
+==== Results
+---
+image::api_algo/event_history/api_algo_event_history_ex1.png["api_algo_event_history_ex1.png"]
+
+
+
+==== Figures
+---
+
+
+====
+[source,python]
+----
+include::example$api_algo/event_history/api_algo_event_history_ex1_fig.py[]
+----
+====
+
+
+++++
+<div id='chart1'></div>
+<script>
+	d3.csv("../_attachments/api_algo/event_history/raw/api_algo_event_history_ex1.csv").then((data) => {
+	
+		var newdata= data.slice(1, 13);
+		var trace1 = [{
+				x: newdata.map((column) => column.ArrivalTime),
+				y: newdata.map((column) => column.TradeQuantityUSD),
+				type: 'line',
+				name: 'TradeQuantityUSD'
+		}]
+		
+		var char_data = trace1; 
+		
+		var layout = {
+					title: 'Child Fills TradeQuantityUSD',
+					showlegend: true,
+					width: 750,
+					height: 500,
+                    xaxis: {
+                        title: {
+                          text: 'ArrivalTime'
+                          }
+                        },
+                  
+                  yaxis: {
+                    title: {
+                      text: 'TradeQuantityUSD'
+                      }
+                    }                    
+					};
+
+
+		var output_div = document.getElementById('chart1')
+		Plotly.newPlot(output_div, char_data, layout, { margin: { t: 0 } },{displayModeBar: false})
+		
+	})
+	
+</script>
+++++
+
+
+++++
+<div id='chart2'></div>
+<script>
+	d3.csv("../_attachments/api_algo/event_history/raw/api_algo_event_history_ex1.csv").then((data) => {
+	
+
+		var trace1 = [{
+				x: data.map((column) => column.ArrivalTime),
+				y: data.map((column) => column.Mid0),
+				type: 'line',
+				name: 'Mid0'
+		}]
+		
+
+		var trace2 = [{
+				x: data.map((column) => column.ArrivalTime),
+				y: data.map((column) => column.Price),
+                mode: 'markers', 
+				type: 'scatter',
+				name: 'Price'
+		}]
+		var char_data = trace1.concat(trace2); 
+		
+		var layout = {
+					title: 'Price and Mid Price of Child Fills',
+					showlegend: true,
+					width: 750,
+					height: 500,
+                    xaxis: {
+                        title: {
+                          text: 'ArrivalTime'
+                          }
+                        },
+                  
+                  yaxis: {
+                    title: {
+                      text: 'Price'
+                      }
+                    }                      
+					};
+
+
+		var output_div = document.getElementById('chart2')
+		Plotly.newPlot(output_div, char_data, layout, { margin: { t: 0 } },{displayModeBar: false})
+		
+	})
+	
+</script>
+++++
+
+++++
+<div id='chart3'></div>
+<script>
+	d3.csv("../_attachments/api_algo/event_history/raw/api_algo_event_history_ex1.csv").then((data) => {
+	
+		var newdata= data.slice(1, 13);
+		var trace1 = [{
+				x: newdata.map((column) => column.ArrivalTime),
+				y: newdata.map((column) => column.SpreadPnLPM),
+                mode: 'markers', 
+				type: 'scatter',
+				name: 'SpreadPnLPM'
+		}]
+		
+		var char_data = trace1; 
+		
+		var layout = {
+					title: 'Child Fills SpreadPnLPM',
+					showlegend: true,
+					width: 750,
+					height: 500,
+                    xaxis: {
+                        title: {
+                          text: 'ArrivalTime'
+                          }
+                        },
+                  
+                  yaxis: {
+                    title: {
+                      text: 'SpreadPnLPM'
+                      }
+                    }                      
+					};
+
+
+		var output_div = document.getElementById('chart3')
+		Plotly.newPlot(output_div, char_data, layout, { margin: { t: 0 } },{displayModeBar: false})
+		
+	})
+	
+</script>
+++++
+
+
+
+== Field Definitions
+
+Refer to xref:analytics_algo.adoc[Analytics Algo] page for details and formula.
+
+[%header,format=csv, cols=["60%", "40%"]]
+|===
+include::example$api_algo/execution_stats/field-definitions_execution_stats.csv[]
+
+|===

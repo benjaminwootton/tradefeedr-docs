@@ -1,0 +1,440 @@
+= Summary Stats
+
+== Introduction
+
+The `v1/fx/rfs/summary_stats` endpoint is designed to provide you the ability to summarise the trading performance looking in particular at the spreads and rejects. For example, you can rank the fill quality of their `LP` s using the summary stats within specific time frame or for certain currency pairs.   
+
+Allows the API user to generate an execution summary report.  The summary report includes standard flow quality metrics such as trading volume, spread paid, rejection costs, market impact (flow toxicity) across user defined categories. The query returns a table with the metrics (fields) `groupby` the user defined columns. 
+
+
+
+== API Specification
+The API endpoint requires a JSON object representing query logic similar to SQL and containing the following fields:
+
+* `groupby` - which fields the results will be aggregated by
+* `select`  - which fields should be returned in the end result.
+* `filter`  - how the underlying data should be filtered
+* `time_offset` - is the decay time offset to use for the performance, e.g. 250ms, 30s, 10m etc
+
+**Note**: That `time_offset` defaults to `DecayPM500ms`
+
+== API Field Descriptions 
+
+=== NumberOfFills
+---
+
+The total number of trades that filled.
+
+
+
+===  NumberOfRejects
+---
+
+The total number of trades that were rejected.
+
+
+
+
+===  FillVolume
+---
+
+Total volume of the trades that were filled.
+
+
+[latexmath]
+++++
+FillVolume = \displaystyle \frac{\sum \limits_{i=0}^{N} TradeQuantityUSD_{i}}{10^6}
+++++
+  
+===  RejectVolume
+---
+
+Total volume of the trades that were rejected. 
+
+
+
+[latexmath]
+++++
+RejectVolume = \displaystyle \frac{\sum \limits_{i=0}^{N}RejectQuantityUSD_{i}}{10^6}
+++++
+
+===  AvgTradeSizeUSD
+---
+The average size in USD of a trade. It is the volume weighted average of the `TradeQuantityUSD`.
+
+The formal definition is as per below.
+ 
+[latexmath]
+++++
+AvgTradeSizeUSD = \displaystyle \frac{\sum \limits_{i=0}^{N} TradeQuantityUSD_{i}}{NumberOfFills} 
+++++
+  
+===  SpreadPaid
+---
+Spread Paid (expressed $/m) - relative difference between price paid and mid price. Positive number means buying above the mid and selling below the mid.
+
+It is formulated as the volume weighted average of the `SpreadPnLPM` and `TradeQuantityUSD`.
+
+The formal definition is as per below.
+
+  
+[latexmath]
+++++
+SpreadPaid = \displaystyle \sum \limits_{i=0}^{N} \frac{SpreadPnLPM_{i}}{TradeQuantityUSD_{i}}
+++++
+
+===  RejectCost
+---
+
+Cost of rejected trade (in $/m).  Relative move in mid-price from the time rejection message was received (time t) to time t + X miliseconds. 
+X milliseconds can be selected by the used. Side adjusted. Positive number means price goes up after buy and down after sell.  
+
+It is the volume weighted average of the markouts of the trades which were rejected.
+
+More formually it is the volume weighted average of the decay (selected by the `time_offset` parameter) and the `RejectVolume`. 
+
+The formal definition is as per below.
+
+
+[latexmath]
+++++    
+RejectCost = \displaystyle \frac{\sum \limits_{j=0}^{N_{rej}}Decay_{rej}(j)×RejectQuantityUSD_{j}}{RejectVolume}
+++++
+
+Where latexmath:[N_{rej}] is the total number of the rejected trades and  each j is a trade which was rejected.
+
+===  ToxicityOfFills
+---
+Cost of filled trades (in $/m). It is the relative move in mid price from the time trade was done (time t) to time t + X milliseconds. X millisecond can be selected by the used. Side adjusted.
+
+It is the weighted volume average of the markouts of the trades which were filled.
+        
+More formually it is the volume weighted average of the decay (selected by the `time_offset` parameter) and the `TradeQuantityUSD` were the `OrderStatus` was F. 
+
+The formal definition is as per below.
+
+[latexmath]
+++++     
+ToxicityOfFills = \displaystyle \frac{\sum \limits_{i=0}^{N_{fill}}Decay_{fill}(i)×TradeQuantityUSD_{i}}{FillVolume}
+++++
+
+Where latexmath:[N_{fill}] is the total number of the filled trades and  each i is a trade which was fill.
+
+===  RejectToFill
+---
+Ratio of the RejectedVolume to the FillVolume.
+
+
+[latexmath]
+++++ 
+RejectToFill = \displaystyle \frac{RejectVolume}{FillVolume}
+++++
+===  EffectiveSpread
+---
+It is the total of the `SpreadPaid` and the `RejectedCost` multiplied by the `RejectRatio`. (All defined above).
+
+
+[latexmath]
+++++ 
+EffectiveSpread = \displaystyle SpreadPaid +  RejectRatio×RejectCosts 
+++++
+
+===  VolumeShare
+---
+It is the `FillVolume` that a row in the table (the query produces) as a percentage contribution to the total FillVolume of the table.
+
+For example, if we `groupby` `LP` the `VolumeShare` metric of LP1 is the `FillVolume` it contributes to the total FillVolume of all the `LP` s as a percentage.
+
+
+===  RejectCostUSD
+---
+Total cost in USD of the rejected trades. This is the product of the `RejectVolume` and the `RejectCost` (as defined above).
+
+The formal definition is as per below.
+[latexmath]
+++++ 
+RejectCostUSD = RejectCost × RejectVolume
+++++
+
+== Examples 
+
+**Note**: For display purposes we have limited the number of rows to 5 and and columns to 10.
+
+=== Default aggregation
+---
+Refer to xref:api_rfs/api_rfs.adoc[RFS API] page for page for details on aggregation logic.
+
+We do not pass any parameters into the `groupby` or `filter` options.
+
+====
+[source,python]
+----
+include::example$api_rfs/summary_stats/api_rfs_summary_stats.py[]
+----
+====
+
+==== Results
+---
+image::api_rfs/summary_stats/api_rfs_summary_stats_ex1.png["api_rfs_summary_stats_ex1.png"]
+
+=== Only `Symbol` in `groupby`
+---
+In this example we group the results by `Symbol` and apply a filter on the `Date` range and `Symbol`s to be excluded.
+
+====
+[source,python]
+----
+include::example$api_rfs/summary_stats/api_rfs_summary_stats_ex2.py[]
+----
+====
+
+==== Results
+---
+image::api_rfs/summary_stats/api_rfs_summary_stats_ex2.png["api_rfs_summary_stats_ex2.png"]
+
+==== Figure
+---
+
+====
+[source,python]
+----
+include::example$api_rfs/summary_stats/api_rfs_summary_stats_ex2_fig.py[]
+----
+====
+
+++++
+<div id='chart1'></div>
+<script>
+	d3.csv("../_attachments/api_rfs/summary_stats/raw/api_rfs_summary_stats_ex2.csv").then((data) => {
+		var trace1 = [{
+				x: data.map((column) => column.Symbol),
+				y: data.map((column) => column.ToxicityOfFills),
+				type: 'bar',
+				name: 'ToxicityOfFills',
+                transforms: [{
+                type: 'sort',
+                target: 'y',
+                order: 'descending'
+                }]
+		}]
+    
+        
+		var char_data = trace1; 
+		
+		var layout = {
+					title: 'ToxicityOfFills by Symbol',
+					showlegend: true,
+					width: 750,
+					height: 500,
+                    xaxis: {
+                        title: {
+                          text: 'Symbol'
+                          }
+                        },
+                  
+                  yaxis: {
+                    title: {
+                      text: 'ToxicityOfFills'
+                      }
+                    }                    
+					};
+
+
+
+		var output_div = document.getElementById('chart1')
+		Plotly.newPlot(output_div, char_data, layout, { margin: { t: 0 } },{displayModeBar: false})
+		
+	})
+	
+</script>
+++++
+
+
+
+=== Rejected Volume and Spread analysis
+---
+In this example we conduct a venue analysis where we group the results by `LP`, `ExecVenue`, `Symbol`. 
+You can assess the fills/rejects and spreads across LPs, different platforms and ECNs. Also, how their volume distribution differs across them.
+
+====
+[source,python]
+----
+include::example$api_rfs/summary_stats/api_rfs_summary_stats_ex3.py[]
+----
+====
+
+==== Results
+---
+image::api_rfs/summary_stats/api_rfs_summary_stats_ex3.png["api_rfs_summary_stats_ex3.png"]
+
+==== Figures
+---
+
+
+====
+[source,python]
+----
+include::example$api_rfs/summary_stats/api_rfs_summary_stats_ex3_fig.py[]
+----
+====
+
+++++
+<div id='chart2'></div>
+<script>
+	d3.csv("../_attachments/api_rfs/summary_stats/raw/api_rfs_summary_stats_ex3.csv").then((data) => {
+		var trace1 = [{
+				x: data.map((column) => column.LP),
+				y: data.map((column) => column.RejectVolume),
+				type: 'bar',
+                name: 'RejectVolume', 
+                transforms: [
+                {
+                type: 'aggregate',
+                groups: data.map((column) => column.LP),
+                aggregations: [
+                {target: 'y', func: 'sum', enabled: true}
+                ]
+                },
+                {
+                type: 'sort',
+                target: 'y',
+                order: 'descending'
+                }]                
+		}]
+        
+
+		var char_data = trace1; 
+		
+		var layout = {
+					title: 'Rejected Volume Bar Chart',
+					showlegend: true,
+					width: 750,
+					height: 500,
+                    xaxis: {
+                        title: {
+                          text: 'LP'
+                          }
+                        },
+                  
+                  yaxis: {
+                    title: {
+                      text: 'RejectVolume'
+                      }                    
+                    }
+					};
+
+
+		var output_div = document.getElementById('chart2')
+		Plotly.newPlot(output_div, char_data, layout, { margin: { t: 0 } },{displayModeBar: false})
+		
+	})
+	
+</script>
+++++
+
+
+
+++++
+<div id='chart3'></div>
+<script>
+	d3.csv("../_attachments/api_rfs/summary_stats/raw/api_rfs_summary_stats_ex3.csv").then((data) => {
+    var selected = 'EURUSD';
+    const data_eur = data.filter(({
+    Symbol
+    }) => selected.includes(Symbol));
+		var trace1 = [{
+				x: data_eur.map((column) => column.LP),
+				y: data_eur.map((column) => column.SpreadPaid),
+				type: 'bar',
+				name: 'EURUSD'
+		}]
+        
+    var selected = 'USDJPY';
+    const data_jpy = data.filter(({
+    Symbol
+    }) => selected.includes(Symbol));
+    
+		var trace2 = [{
+				x: data_jpy.map((column) => column.LP),
+				y: data_jpy.map((column) => column.SpreadPaid),
+				type: 'bar',
+				name: 'USDJPY'
+		}]
+        
+		var char_data = trace1.concat(trace2); 
+		
+		var layout = {
+					title: 'Spread analysis by LP',
+					showlegend: true,
+					width: 750,
+					height: 500,
+                    xaxis: {
+                        title: {
+                          text: 'LP'
+                          }
+                        },
+                  
+                  yaxis: {
+                    title: {
+                      text: 'SpreadPaid'
+                      }                    
+                    }
+					};
+
+
+		var output_div = document.getElementById('chart3')
+		Plotly.newPlot(output_div, char_data, layout, { margin: { t: 0 } },{displayModeBar: false})
+		
+	})
+	
+</script>
+++++
+
+
+=== LP review (masking)
+---
+In this example we use the `eqx` function on LP1 and EURUSD.
+This enables you to provide a summary report to LP1 highlighting their own statistics and how it aligns with all the other LPs the RFS user has.
+
+It anonymises the data hiding the details of the names of the other `LP`s you have. 
+Applying, `eqx` on EURUSD outputs a row for EURUSD and aggregates all the other pairs together in a separate row, labelled as Other.
+
+This can also be used by the LP to do internal analysis of one their account versus everything else.
+
+**Note:** For more details on `eqx` refer to the xref:api_rfs/api_rfs_execution_stats.adoc[Execution Stats] page. 
+
+
+====
+[source,python]
+----
+include::example$api_rfs/summary_stats/api_rfs_summary_stats_ex4.py[]
+----
+====
+
+==== Results
+---
+image::api_rfs/summary_stats/api_rfs_summary_stats_ex4.png["api_rfs_summary_stats_ex4.png"]
+
+=== LP review (masking with decay offset)
+---
+In this example we show how to apply the `time_offset` and `select` filters to customise the example above.
+
+====
+[source,python]
+----
+include::example$api_rfs/summary_stats/api_rfs_summary_stats_ex5.py[]
+----
+====
+
+==== Results
+---
+image::api_rfs/summary_stats/api_rfs_summary_stats_ex5.png["api_rfs_summary_stats_ex5.png"]
+
+== Field Definitions
+
+Refer to xref:analytics_rfs.adoc[Analytics RFS] page for details and formula.
+
+[%header,format=csv]
+|===
+include::example$api_rfs/summary_stats/rfs_field_definitions_summary_stats.csv[]
+|===

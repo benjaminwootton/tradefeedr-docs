@@ -1,0 +1,198 @@
+= Parent Orders 
+
+== Introduction
+
+The `v1/fx/algo/parent-orders` endpoint can be used to build algo trading blotter. For example, you can query the most recent trades and their associated performance metrics. 
+API  endpoint can also be used to compare the distributions of algo trading performance across different algo providers, business units, currencies etc (algo wheel).
+
+It returns a table of algo execution information, one algo run per table row. Each row contains a number of fields controlled by the `select` parameter. 
+The fields are either (1) descriptive such as `ParentOrderID`, `Symbol`, `LP`  or (2) calculated such as `ArrivalMidPerfBPS`.  
+
+
+== API Specification 
+The API endpoint requires a JSON query representing query logic in SQL-like fashion and containing the following fields:
+
+* `select`  - which variables should be returned in the end result. For example `ArrivalMidPerfBPS`. The full list of possible values can be found at the end of this notebook
+* `filter`  - how the underlying data should be filtered
+
+
+== Examples
+
+**Note**: For display purposes we have limited the number of rows to 5 and and columns to 10.
+
+=== Algo Blotter 
+---
+Typical application of this  API end point is algo trading blotter. 
+A list of most recent algo executions can be queried from underlying dataset and presented as the table.
+
+====
+[source, python]
+----
+include::example$api_algo/parent_orders/api_algo_parent_orders.py[]
+----
+====
+
+
+==== Results
+---
+image::api_algo/parent_orders/api_algo_parent_orders_ex1.png["api_algo_parent_orders_ex1.png"]
+
+
+=== Filtering by performance metric
+---
+This example selects a number of algo runs done in specific currency pair (EURUSD) and applies a filter to a performance metric (for example `ArrivalMidPerfBPS`). 
+
+
+====
+
+[source, python]
+
+----
+include::example$api_algo/parent_orders/api_algo_parent_orders_ex2.py[]
+----
+====
+
+==== Results
+---
+
+
+**Note**: In the table below the result set has been truncated and it is not displaying the performance metrics.
+
+image::api_algo/parent_orders/api_algo_parent_orders_ex2.png["api_algo_parent_orders_ex2.png"]
+
+
+
+
+=== Performance Metric Distribution
+---
+In this example, we filter the algo runs to find algos with a negative ArrivalMidPerfBPS.
+From this dataset we can construct a histogram showcasing the distribution of the Algo runs with a negative  `ArrivalMidPerfBPS`.
+
+====
+[source, python]
+----
+include::example$api_algo/parent_orders/api_algo_parent_orders_ex6.py[]
+----
+====
+
+==== Results
+---
+image::api_algo/parent_orders/api_algo_parent_orders_ex6.png["api_algo_parent_orders_ex6.png",750,200]
+
+
+==== Figure
+---
+The figure below plots the distibution of the ArrivalMidPerfBPS metric queried in the example above. 
+====
+
+[source, python]
+----
+include::example$api_algo/parent_orders/api_algo_parent_orders_ex6_fig.py[]
+----
+====
+
+
+++++
+<div id='Performance Metric Distribution'></div>
+<script>
+ d3.csv("../_attachments/api_algo/parent_orders/api_algo_parent_orders_ex6.csv").then((data) => {
+		var trace1 = [{
+				x: data.map((column) => column.ArrivalMidPerfBPS),
+				type: 'histogram',
+				name: 'ArrivalMidPerfBPS'
+		}]
+        
+		
+		var char_data = trace1; 
+		
+		var layout = {
+					title: 'Histogram of ArrivalMidPerfBPS',
+					showlegend: true,
+					width: 750,
+					height: 500,
+                    xaxis: {
+                        title: {
+                          text: 'ArrivalMidPerfBPS'
+                          }
+                        },
+                   
+                  yaxis: {
+                    title: {
+                      text: 'Frequency'
+                      }
+                    }
+            
+					};
+
+
+		var output_div = document.getElementById('Performance Metric Distribution')
+		Plotly.newPlot(output_div, char_data, layout, { margin: { t: 0 } },{displayModeBar: false})
+		
+	})
+	
+</script>
+++++
+
+=== Descriptive statistics for algo performance 
+---
+API user gets access to all individual parent order executions. 
+These can be used to generate descriptive statistics per AlgoVendor (`LP`), `Symbol` or any other descriptive variable.   
+
+
+Below we apply the pandas groupby and describe function to produce statstics on the `ArrivalMidPerfNetBPS` metric by `LP`.
+
+
+====
+[source, python]
+
+----
+include::example$api_algo/parent_orders/api_algo_parent_orders_ex3.py[]
+----
+====
+
+==== Results
+---
+image::api_algo/parent_orders/api_algo_parent_orders_ex3.png["api_algo_parent_orders_ex3.png",500,100]
+
+
+=== Selecting all with  a filter
+---
+Omitting `select` option results in API returning all columns. You can then select any metrics required for further analysis from the returned table.  
+====
+[source, python]
+
+----
+include::example$api_algo/parent_orders/api_algo_parent_orders_ex4.py[]
+----
+====
+
+==== Results
+---
+image::api_algo/parent_orders/api_algo_parent_orders_ex4.png["api_algo_parent_orders_ex4.png"]
+
+=== Selecting all the data
+---
+
+Omitting both `select` and `filter` returns the entire algo parent order stats table. 
+
+**Warning**: Returned result can be very large.
+
+====
+[source, python]
+----
+include::example$api_algo/parent_orders/api_algo_parent_orders_ex5.py[]
+----
+====
+
+==== Results
+---
+image::api_algo/parent_orders/api_algo_parent_orders_ex5.png["api_algo_parent_orders_ex5.png"]
+
+== Field Definitions
+Refer to xref:analytics_algo.adoc[Analytics Algo] page for details and formula.
+
+[%header,format=csv, cols=["60%", "40%"]]
+|===
+include::example$api_algo/parent_orders/field-definitions_parent_orders.csv[]
+
+|===

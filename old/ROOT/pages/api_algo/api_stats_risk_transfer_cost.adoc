@@ -1,0 +1,216 @@
+= Risk Transfer Cost
+
+---
+==  Introduction 
+The `v1/fx/stats/risk-transfer-cost` endpoint attempts to create an approximation of fair price of immediate execution. 
+This endpoint is used when you want to estimate the "fair" spread they would pay if they were to execute full amount immediately.
+
+There are different approaches to estimate the risk transfer costs. Those approaches rank from model driven to purely empirical (measure realized transaction costs and assume they those are best forecast for future). 
+
+Tradefeedr is not a trading company, does not have a live market feeds and hence lacks the data to estimate this risk transfer reliably and consistency with the market. Therefore, Tradefeedr relies on the combined information provided by its member banks and distills this information into a factor model to project fair risk transfer cost for each market environment. 
+
+
+== Model Specification 
+For the model specification refer to the xref:analytics_risk_transfer_price.adoc[Risk Transfer Benchmark] page for details.
+
+== API Specification 
+
+The API endpoint requires a JSON object representing query logic similar to SQL and containing the following fields:
+
+* `select`  - which fields should be returned in the end result. For example `OrderQuantity`
+* `filter`  - how the underlying data should be filtered
+
+
+**Note**: filter takes only `Symbol`,`ArrivalTime` and `OrderQuantity`.
+
+* `OrderQuantity` defaults to 1m USD.
+* `ArrivalTime` defaults to the current timestamp.  
+*  If `Symbol` is not present in the filter no results are returned.
+
+== Examples 
+**Note**: For display purposes we have limited the number of rows to 5 and and columns to 10.
+
+=== For A Single Trade   
+---
+You can query a single trade using the `filter` option to select a single `Symbol`, `ArrivalTime` and `OrderQuantity`(in USD million).
+
+
+====
+[source,python]
+----
+include::example$api_algo/risk_transfer_cost/api_algo_risk_transfer_cost.py[]
+----
+====
+
+==== Results
+---
+image::api_algo/risk_transfer_cost/api_algo_risk_transfer_cost_ex1.png["api_algo_risk_transfer_cost_ex1.png"]
+
+=== For A Selection Of Trades   
+---
+You can query a selection of trades using the `filter` option to select a list of `Symbol`, `ArrivalTime` and `OrderQuantity`(in USD million).
+
+Then use the `select` option to select the columns displayed.
+
+====
+[source,python]
+----
+include::example$api_algo/risk_transfer_cost/api_algo_risk_transfer_cost_ex2.py[]
+----
+====
+
+==== Results
+---
+image::api_algo/risk_transfer_cost/api_algo_risk_transfer_cost_ex2.png["api_algo_risk_transfer_cost_ex2.png",600,100]
+
+===  By `OrderQuantity`
+---
+
+The example below shows how risk transfer price depends on the order size. 
+
+The dependences of the model are estimated based on empirical data and the coefficients are different for different currencies.  
+
+**Note:** Each of the `filter` options fields must be of equal length in order for the query to run. 
+
+====
+[source,python]
+----
+include::example$api_algo/risk_transfer_cost/api_algo_risk_transfer_cost_ex3.py[]
+----
+====
+
+==== Results
+---
+image::api_algo/risk_transfer_cost/api_algo_risk_transfer_cost_ex3.png["api_algo_risk_transfer_cost_ex3.png",500,100]
+
+==== Figure
+---
+
+====
+[source,python]
+----
+include::example$api_algo/risk_transfer_cost/api_algo_risk_transfer_cost_ex3_fig.py[]
+----
+====
+
+
+++++
+<div id='Chart1'></div>
+<script>
+ d3.csv("../_attachments/api_algo/risk_transfer_cost/api_algo_risk_transfer_cost_ex3.csv").then((data) => {
+
+var trace1 = [{
+				x: data.map((column) => column.OrderQuantity),
+				y: data.map((column) => column.RiskTransferCostBPS),
+				type: 'line',
+				name: 'RiskTransferCostBPS'
+		}];
+
+		var char_data = trace1; 
+		
+		var layout = {
+					title: 'Risk Transfer Cost by OrderQuantity',
+					showlegend: true,
+					width: 750,
+					height: 500,
+                    xaxis: {
+                        title: {
+                          text: 'OrderQuantity'
+                          }
+                        },
+                   
+                  yaxis: {
+                    title: {
+                      text: 'RiskTransferCostBPS'
+                      }
+                    }
+            
+					};                    
+
+
+		var output_div = document.getElementById('Chart1')
+		Plotly.newPlot(output_div, char_data, layout, { margin: { t: 0 } },{displayModeBar: false})
+		
+	})
+	
+</script>
+++++
+
+
+=== By `ArrivalTime` 
+---
+
+Dynamics of Risk Transfer Costs over time is mainly determined by volatility of the underlying asset.
+In the example below, if the measured volatiliity (estimates on a rolling basis for 20 days preceding the day/time of the trade) then EURUSD risk transfer price increases.   
+ 
+====
+[source,python]
+----
+include::example$api_algo/risk_transfer_cost/api_algo_risk_transfer_cost_ex4.py[]
+----
+====
+
+==== Results
+---
+image::api_algo/risk_transfer_cost/api_algo_risk_transfer_cost_ex4.png["api_algo_risk_transfer_cost_ex4.png",400,100]
+
+==== Figure
+---
+
+====
+[source,python]
+----
+include::example$api_algo/risk_transfer_cost/api_algo_risk_transfer_cost_ex4_fig.py[]
+----
+====
+
+
+++++
+<div id='Chart2'></div>
+<script>
+ d3.csv("../_attachments/api_algo/risk_transfer_cost/raw/api_algo_risk_transfer_cost_ex4.csv").then((data) => {
+
+var trace1 = [{
+				x: data.map((column) => column.ArrivalTime),
+				y: data.map((column) => column.RiskTransferCostBPS),
+				type: 'line',
+				name: 'RiskTransferCostBPS'
+		}]
+
+		var char_data = trace1; 
+		
+		var layout = {
+					title: 'Risk Transfer Cost by ArrivalTime',
+					showlegend: true,
+					width: 750,
+					height: 500,
+                    xaxis: {
+                        title: {
+                          text: 'ArrivalTime'
+                          }
+                        },
+                   
+                  yaxis: {
+                    title: {
+                      text: 'RiskTransferCostBPS'
+                      }
+                    }
+            
+					};                   
+
+
+		var output_div = document.getElementById('Chart2')
+		Plotly.newPlot(output_div, char_data, layout, { margin: { t: 0 } },{displayModeBar: false})
+		
+	})
+	
+</script>
+++++
+
+== Field Definitions
+Refer to xref:analytics_risk_transfer_price.adoc[Risk Transfer Benchmark] page for details and formula.
+
+[%header,format=csv]
+|===
+include::example$api_algo/risk_transfer_cost/field-definitions_risk_transfer_cost.csv[]
+|===

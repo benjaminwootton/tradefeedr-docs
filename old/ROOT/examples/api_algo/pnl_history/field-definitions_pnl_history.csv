@@ -1,0 +1,9 @@
+Name,Description
+Mid,Tradefeedr mid price
+Time,time
+LimitPrice,Algo LimitPrice set by the user and effective at time equal to “time”
+IsActive,Whether the algo is active of not. The algo is active if the LimitPrice is not set or if the current market price is above (below) the LimitPrice for sell (buy) orders
+SlippageToArrivalMidPM,Dynamics Total P&L of the algo in $/M using Arrival Price as the benchmark. Equals to the sum of SlippageToArrivalMidPMUser and SlippageToArrivalMidPMBank
+SlippageToArrivalMidPMUser,"Algo P&L attributed to user the algo. P&L (positive or negative) can be attributed to algo user if they intervene in the normal course of algo execution by setting limit prices, stopping and restarting algo execution or doing other actions affecting algo performance. "
+SlippageToArrivalMidPMBank,Algo P&L attributed to AlgoVendor
+TradeQuantityRemainUSD,"Total Quantiy which is remained to be executed at the ""time"". Expressed in USD "

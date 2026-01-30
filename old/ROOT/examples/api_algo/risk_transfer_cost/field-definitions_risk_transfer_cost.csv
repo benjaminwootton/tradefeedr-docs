@@ -1,0 +1,9 @@
+Name,Description
+Date,Date corresponding to ArrivalTime
+Symbol,Currency pair. For example EURUSD
+ArrivalTime,ArrivalTime is the time when trade request was sent. It is GMT time
+OrderQuantity,Total  quantity ordered in millions USD
+VolatilityRollingPct,Annualised (times sqrt(252)) 20 day rolling volatility of the return series of the specified Symbol and ArrivalTime
+VolatilityIntegratedPct,Annualised (times sqrt(252)) square root of the 20 day moving average of the squared return series of the specified Symbol and ArrivalTime
+VolatilityRollingEMAPct,Annualised (times sqrt(252)) square root of the 20 day exponential moving average of the squared return series of the specified Symbol and ArrivalTime
+RiskTransferCostBPS,Risk Transfer Cost is the cost of alternative immediate execution (against risk transfer benchmark). Aggregated across individual ParentOrderIDs as a weighted average with TradeQuantityUSD being the weights.  Expressed in basis points (to mid)

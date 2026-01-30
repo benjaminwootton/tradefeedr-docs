@@ -1,0 +1,137 @@
+= Execution History
+
+== Introduction
+
+The `v1/fx/rfs/execution-history` endpoint is used when you require a detailed analysis and understanding of a specific trading `Date`. The endpoint allows for the selection of multiple metrics (fields) such as markouts at various time points, `Price`,  `OrderStatus`, `spreadPnL` and  `TradeQuantityUSD`.
+
+
+== API Specification
+
+The API endpoint requires a JSON object representing query logic similar to SQL and containing the following fields:
+
+* `select`  - which fields should be returned in the end result. For example `SpreadPnL`
+* `filter`  - how the underlying data should be filtered
+
+**Note:** `Date` is the only valid filter field for this endpoint and it should be a specific date and not a range of days.
+
+
+== API Field Descriptions 
+
+== Example 
+
+**Note**: For display purposes we have limited the number of rows to 5 and and columns to 10.
+
+=== Execution History for a ParentOrderID
+---
+
+====
+[source,python]
+----
+include::example$api_rfs/execution_history/api_rfs_execution_history.py[]
+----
+====
+
+==== Results
+---
+image::api_rfs/execution_history/api_rfs_execution_history_ex.png["api_rfs_execution_history_ex.png"]
+
+==== Figure
+---
+
+====
+[source,python]
+----
+include::example$api_rfs/execution_history/api_rfs_execution_history_ex1_fig.py[]
+----
+====
+
+++++
+<div id='chart1'></div>
+<script>
+	d3.csv("../_attachments/api_rfs/execution_history/raw/api_rfs_execution_history_ex1.csv").then((data) => {
+		var selected = 'AUDUSD';
+		const res = data.filter(({
+		  Symbol
+		}) => selected.includes(Symbol));
+		var trace1 = [{
+				x: res.map((column) => column.TradeTime),
+				y: res.map((column) => column.TradeQuantityUSD),
+                mode: 'markers',
+				type: 'scatter',
+				name: 'AUDUSD'
+		}]
+        
+		var selected = 'EURUSD';
+		const res1 = data.filter(({
+		  Symbol
+		}) => selected.includes(Symbol));
+		var trace2 = [{
+				x: res1.map((column) => column.TradeTime),
+				y: res1.map((column) => column.TradeQuantityUSD),
+                mode: 'markers',
+				type: 'scatter',
+				name: 'EURUSD'
+		}]
+
+		var selected = 'GBPUSD';
+		const res2 = data.filter(({
+		  Symbol
+		}) => selected.includes(Symbol));
+		var trace3 = [{
+				x: res2.map((column) => column.TradeTime),
+				y: res2.map((column) => column.TradeQuantityUSD),
+                mode: 'markers',
+				type: 'scatter',
+				name: 'GBPUSD'
+		}]
+        
+		var selected = 'USDJPY';
+		const res3 = data.filter(({
+		  Symbol
+		}) => selected.includes(Symbol));
+		var trace4 = [{
+				x: res3.map((column) => column.TradeTime),
+				y: res3.map((column) => column.TradeQuantityUSD),
+                mode: 'markers',
+				type: 'scatter',
+				name: 'USDJPY'
+		}]        
+        
+    
+		var char_data = trace1.concat(trace2, trace3, trace4); 
+		
+		var layout = {
+					title: 'Volume Traded by TradeTime',
+					showlegend: true,
+					width: 750,
+					height: 500,
+                    xaxis: {
+                        title: {
+                          text: 'TradeTime'
+                          }
+                        },
+                  
+                  yaxis: {
+                    title: {
+                      text: 'TradeQuantityUSD'
+                      }                    
+                    }                    
+					};
+
+
+		var output_div = document.getElementById('chart1')
+		Plotly.newPlot(output_div, char_data, layout, { margin: { t: 0 } },{displayModeBar: false})
+		
+	})
+	
+</script>
+++++
+
+== Field Definitions
+
+Refer to xref:analytics_rfs.adoc[Analytics RFS] page for details and formula.
+
+[%header,format=csv]
+|===
+include::example$api_rfs/execution_stats/rfs_field_definitions_execution_stats.csv[]
+|===

@@ -1,0 +1,34 @@
+= API
+
+== Tradefeedr API Structure
+
+
+Conceptually, each API call has two components:
+
+
+* `API end-point` which can be thought of as function doing specific job. Consider for example API endpoint `v1/fx/algo/parent-orders`.
+
+* JSON string containing a set of parameters for the API end-point function. The exact structure of the query string depends on the end point but the following parameters are typically present
+** `groupby` –  variables by which the results would have to be grouped by. For example: `{'groupby':['Symbol']}` implies that results have to be grouped by symbol.
+**  `var`    -  which variables should be returned in the end points.  For example
+**  `filter` - how to filter the results.
+
+All API end-points return a JSON dictionary which can translated into a Python Pandas DataFrame.
+
+
+=== Example API Usage
+---
+
+Example API usage is presented below:
+
+====
+[source, python]
+
+----
+include::example$api_algo/parent_orders/api_algo_parent_orders.py[]
+----
+====
+
+==== Results
+---
+image::api_algo/parent_orders/api_algo_parent_orders_ex1.png["api_algo_parent_orders_ex1.png"]

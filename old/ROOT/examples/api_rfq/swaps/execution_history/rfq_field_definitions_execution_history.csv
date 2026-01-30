@@ -1,0 +1,21 @@
+Name,Description
+Date,Date corresponding to TradeTime
+TradeTime,TradeTime - Time (GMT) when the trade was filled
+TradeID,"Unique identifier for a trading event. Event can fill, order submission, reject or other event related to trading workflow"
+Symbol,Currency pair. For example EURUSD.
+Side,"Trade side. ""B” for buy and ""S” for sell."
+LP,Executing LP - counterparty to the trade.
+Account,Name of the underlying client this ParentOrderID executed on behalf of
+SubAccount,SubAccount associated with this ParentOrderID
+OrderID,Unique identifier for the order
+Trader,The name of a trader associated with this TradeID
+TradeCcy,"Denomination Currency for TradeQuantity and OrderQuantity. For example
+    EUR."
+ProductType,Type of product traded. For example SPOT
+NumLPs,Total number of LPs in the stack
+NearPrice,Price of the near leg
+FarPrice,Price of the far leg
+NearTradeQuantity,Neg leg traded quantity expressed in TradeCurrency
+FarTradeQuantity,Far leg traded quantity expressed in TradeCurrency
+NearValueDate,Settlement date of the near leg
+FarValueDate,Settlement date of the far leg

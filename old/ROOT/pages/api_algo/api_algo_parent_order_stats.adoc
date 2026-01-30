@@ -1,0 +1,554 @@
+= Parent Order Stats
+
+== Introduction
+
+The purpose of the `v1/fx/algo/parent-order-stats` endpoint is to provide standard algo performance metrics aggregated across user defined categories like currency pair or LP. For example, you can rank the trading performance of their algo vendors using a performance metric (list of those provided below) within specific time frame or for certain currency pairs.   
+
+It returns a table with algo trading performance statistics, e.g. `ArrivalMidPerfBPS`. 
+Each row contains algo trading performance aggregated by the specified `groupby` fields. 
+
+
+
+== API Specification
+The API endpoint requires a Query String. A Query String is a JSON object representing query logic in SQL-like fashion that contains the following fields:
+
+* `groupby` - what columns should the result set be aggregated by
+* `select`  - what columns should be returned in the result set
+* `filter`  - what filters should be applied to the result set before they are returned
+* `risk_price_benchmark` - see below explanation
+* `notation` - see below explanation
+
+You can specify `risk_price_benchmark` as an additional field in the Query. The four possible values are described below:
+
+* `TradefeedrModel` - (Default) This is Tradefeedr risk transfer benchmark constructed from the data collected from individual algo runs and fitted to volatility, time of the day and trade size. 
+* `BankReported` - This is the benchmark reported by the algo provider. This is only available for those providers who submit this data. `None` is reported for others.  
+* `OwnRiskPriceStatic` - This is provided by you (via uploading spread matrices) for your own internal use. 
+* `OwnRiskPriceVolAdjusted` - This adjusts `OwnRiskPriceStatic` for volatility. 
+
+You can provide `notation` as a field in the Query. It is either `performance` or `slippage`. Setting `notation` to `performance` expresses the algo statistics in terms of basis points and 
+expresses algo metrics in terms of performance (the higher the number the better).   Setting `notation` to `slippage` switches to slippage terminology 
+(the lower the number the better).
+
+Endpoint returns feilds like `SlippageToArrivalMidPM` and 
+negative numbers imply a good outcome. This notation is consistent with original Implementation Shortfall terminology.  
+
+
+== Examples 
+**Note**: For display purposes we have limited the number of rows to 5 and and columns to 10.
+
+
+=== Return all available benchmarks (`performance`)
+---
+Refer to xref:api_algo/api_algo.adoc[Algo API] page for page for details on aggregation logic.
+
+**Note:** That in this example we `groupby` `LP` and removed the select query to return all available benchmarks.
+This example uses the `TradefeedrModel` and `notation` is set to `performance`, as a result the algo stats are expressed in terms of basis points.
+
+====
+
+[source,python]
+
+----
+include::example$api_algo/parent_order_stats/api_algo_parent_order_stats.py[]
+----
+====
+
+
+==== Results
+---
+image::api_algo/parent_order_stats/api_algo_parent_order_stats_ex1.png["api_algo_parent_order_stats_ex1.png"]
+
+
+==== Figure
+---
+
+====
+[source,python]
+----
+include::example$api_algo/parent_order_stats/api_algo_parent_order_stats_ex1_fig.py[]
+----
+====
+
+
+++++
+<div id='chart3_pie'></div>
+<script>
+	d3.csv("../_attachments/api_algo/parent_order_stats/api_algo_parent_order_stats_ex1.csv").then((data) => {
+		var trace1 = [{
+				labels: ["LP1", "LP2" , "LP3"],
+				values: data.map((column) => column.TradeQuantityUSD),
+				type: 'pie'
+		}]
+        
+		var char_data = trace1; 
+		
+		var layout = {
+					title: 'TradeQuantityUSD by LP',
+					showlegend: true,
+					width: 750,
+					height: 500,
+					};
+
+
+		var output_div = document.getElementById('chart3_pie')
+		Plotly.newPlot(output_div, char_data, layout, { margin: { t: 0 } },{displayModeBar: false})
+		
+	})
+	
+</script>
+++++
+
+=== Return all available benchmarks (`slippage`)
+---
+Refer to xref:api_algo/api_algo.adoc[Algo API] page for page for details on aggregation logic.
+
+**Note:** This is the same as the above example however, we are using `slippage` in the `notation` option.
+Benchmarks returned are in slippage terminology.
+
+====
+[source,python]
+----
+include::example$api_algo/parent_order_stats/api_algo_parent_order_stats_ex2.py[]
+----
+====
+
+==== Results
+---
+image::api_algo/parent_order_stats/api_algo_parent_order_stats_ex2.png["api_algo_parent_order_stats_ex2.png"]
+
+=== Comparing algo performance metrics across LPs
+---
+
+Refer to xref:api_algo/api_algo.adoc[Algo API] page for page for details on aggregation logic.
+
+**Note:** In this example `notation` is set to `performance` as we are analysing the results in basis point terms. Changing the `notation` to `slippage` will result in no output being displayed.
+
+This is due to the `select` option selecting fields which are only present when notation is in the `performance` setting.
+
+It is important for algo user to know which algo vendor delivered better performance over specific time range. For the comparison to be meaningful a filter must be applied. 
+Ensuring that we do not compare performance across different currencies or liquidity conditions. 
+
+The example below compares risk adjusted performance `RiskTransferPricePerfIR` across three algo vendors (LP1 to LP3) for EURUSD. 
+Additionally, a time filter can be applied to select only high liquidity periods.    
+
+
+====
+[source,python]
+----
+include::example$api_algo/parent_order_stats/api_algo_parent_order_stats_ex3.py[]
+----
+====
+
+==== Results
+---
+image::api_algo/parent_order_stats/api_algo_parent_order_stats_ex3.png["api_algo_parent_order_stats_ex3.png"]
+
+
+==== Figure
+---
+
+====
+[source,python]
+----
+include::example$api_algo/parent_order_stats/api_algo_parent_order_stats_ex3_fig.py[]
+----
+====
+
+++++
+<div id='chart1'></div>
+<script>
+	d3.csv("../_attachments/api_algo/parent_order_stats/api_algo_parent_order_stats_ex3.csv").then((data) => {
+		var trace1 = [{
+				x: data.map((column) => column.LP),
+				y: data.map((column) => column.ArrivalMidPerfBPS),
+				type: 'bar',
+				name: 'ArrivalMidPerfBPS',
+                transforms: [{
+                            type: 'sort',
+                            target: 'y',
+                            order: 'ascending'
+                            }]
+		}]
+
+		var char_data = trace1; 
+		
+		var layout = {
+					title: 'Comparing Algo Performance Across LPs',
+					showlegend: true,
+					width: 750,
+					height: 500,
+                    xaxis: {
+                        title: {
+                          text: 'LP'
+                          }
+                        },
+                   
+                  yaxis: {
+                    title: {
+                      text: 'ArrivalMidPerfBPS'
+                      }
+                    }
+					};
+
+
+		var output_div = document.getElementById('chart1')
+		Plotly.newPlot(output_div, char_data, layout, { margin: { t: 0 } },{displayModeBar: false})
+		
+	})
+	
+</script>
+++++
+
+
+=== Comparing different risk transfer price benchmarks
+---
+**Note:** Following examples are using the `performance` setting on the `notation` option as we are comparing the `RiskTransferPricePerfBPS`.
+
+Risk transfer price benchmark is a zero risk alternative of algo execution: immediately crossing the spread. Tradefeedr provides a number of alternatives for algo benchmarking 
+Option  `TradefeedrModel` calculates algo performance with respect to Tradefeer risk transfer model. The performance is aggregated across `groupby` categories.  
+
+====
+[source,python]
+----
+include::example$api_algo/parent_order_stats/api_algo_parent_order_stats_ex4.py[]
+----
+====
+
+==== Results
+---
+image::api_algo/parent_order_stats/api_algo_parent_order_stats_ex4.png["api_algo_parent_order_stats_ex4.png",200,200]]
+
+==== Figure
+---
+====
+[source,python]
+----
+include::example$api_algo/parent_order_stats/api_algo_parent_order_stats_ex4_fig.py[]
+----
+====
+
+
+++++
+<div id='chart2'></div>
+<script>
+	d3.csv("../_attachments/api_algo/parent_order_stats/api_algo_parent_order_stats_ex4.csv").then((data) => {
+		var trace1 = [{
+				x: data.map((column) => column.LP),
+				y: data.map((column) => column.RiskTransferPricePerfBPS),
+				type: 'bar',
+				name: 'RiskTransferPricePerfBPS',
+                transforms: [{
+                            type: 'sort',
+                            target: 'y',
+                            order: 'ascending'
+                            }]                
+		}]
+
+		var char_data = trace1; 
+		
+		var layout = {
+					title: 'Comparing different risk transfer price benchmarks',
+					showlegend: true,
+					width: 750,
+					height: 500,
+                    xaxis: {
+                        title: {
+                          text: 'LP'
+                          }
+                        },
+                   
+                  yaxis: {
+                    title: {
+                      text: 'RiskTransferPricePerfBPS'
+                      }
+                    }                    
+					};
+
+
+		var output_div = document.getElementById('chart2')
+		Plotly.newPlot(output_div, char_data, layout, { margin: { t: 0 } },{displayModeBar: false})
+		
+	})
+	
+</script>
+++++
+
+
+=== Select large orders in low volatility environment 
+---
+Performance may vary in low and high volatility environments, so selecting the correct environment for you may help to better estimate expected algo performance.
+
+Example below only includes algo runs when the market volatility is below 10 percent (annualised).
+
+====
+[source,python]
+----
+include::example$api_algo/parent_order_stats/api_algo_parent_order_stats_ex5.py[]
+----
+====
+
+==== Results
+---
+image::api_algo/parent_order_stats/api_algo_parent_order_stats_ex5.png["api_algo_parent_order_stats_ex5.png", 600,100]]
+
+==== Figure
+---
+
+====
+[source,python]
+----
+include::example$api_algo/parent_order_stats/api_algo_parent_order_stats_ex5_fig.py[]
+----
+====
+
+++++
+<div id='chart3'></div>
+<script>
+	d3.csv("../_attachments/api_algo/parent_order_stats/api_algo_parent_order_stats_ex5.csv").then((data) => {
+
+		var trace1 = [{
+				x: ["LP1", "LP2" , "LP3"],
+				y: data.map((column) => column.ArrivalMidPerfBPS),
+				type: 'bar',
+				name: 'ArrivalMidPerfBPS',
+                transforms: [{
+                            type: 'sort',
+                            target: 'y',
+                            order: 'ascending'
+                            }]                
+		}]
+
+		
+		var char_data = trace1; 
+		
+		var layout = {
+					title: 'Select large orders in low volatility environment',
+					showlegend: true,
+					width: 750,
+					height: 500,
+                    xaxis: {
+                        title: {
+                          text: 'LP'
+                          }
+                        },
+                   
+                  yaxis: {
+                    title: {
+                      text: 'ArrivalMidPerfBPS'
+                      }
+                    }                    
+					}
+
+
+		var output_div = document.getElementById('chart3')
+		Plotly.newPlot(output_div, char_data, layout, { margin: { t: 0 } },{displayModeBar: false})
+		
+	})
+	
+</script>
+++++
+
+
+=== Select orders wih a low performance metric
+---
+Conditional on bad execution outcome which algo vendor is likely to do worse? 
+
+Example below compares algo performance across LPs, only selecting algo run where algo performance metrics (such as `ArrivalMidPerfBPS`) is below certain threshold. 
+
+====
+[source,python]
+----
+include::example$api_algo/parent_order_stats/api_algo_parent_order_stats_ex6.py[]
+----
+====
+
+==== Results
+---
+image::api_algo/parent_order_stats/api_algo_parent_order_stats_ex6.png["api_algo_parent_order_stats_ex6.png",600,100]
+
+
+===  Empty groupby
+---
+This is useful when only total number is required. 
+
+====
+[source,python]
+----
+include::example$api_algo/parent_order_stats/api_algo_parent_order_stats_ex7.py[]
+----
+====
+
+==== Results
+---
+image::api_algo/parent_order_stats/api_algo_parent_order_stats_ex7.png["api_algo_parent_order_stats_ex7.png",600,100]
+
+=== Wildcard `*` search 
+---
+Filtering supports simple wildcard. In the example below we select all the currencies pairs which start with USD and group by currency pair to illustrate the result of the filtering. It is useful to aggregate across specific crosses. 
+
+For example, if algo user would like to analyse results for all AUD crosses (EURAUD, AUDUSD etc). 
+
+====
+[source,python]
+----
+include::example$api_algo/parent_order_stats/api_algo_parent_order_stats_ex8.py[]
+----
+====
+
+==== Results
+---
+image::api_algo/parent_order_stats/api_algo_parent_order_stats_ex8.png["api_algo_parent_order_stats_ex8.png",600,100]
+
+=== Excluding Specific Variables
+---
+At times, you may wish to exclude certain currency pair(s) or/and certain liquidity provider(s) from analysis. 
+The `not_in` function only applies to symbolic variables.
+
+====
+[source,python]
+----
+include::example$api_algo/parent_order_stats/api_algo_parent_order_stats_ex9.py[]
+----
+====
+
+==== Results
+---
+image::api_algo/parent_order_stats/api_algo_parent_order_stats_ex9.png["api_algo_parent_order_stats_ex9.png",600,100]
+
+
+=== Intraday pattern of different performance metrics
+---
+
+Intraday execution pattern can be easily constructed across select time period/currencies. 
+
+The `ArrivalTime` variable in the `groupby` below is transformed in `HH:MM` format and is then rounded down to the nearest multiple of `par`. 
+
+For example, 11:20 becomes 11:00. 
+The buckets such as 11:00 (including all times from 11:00 and 11:29) and 11:30 (including all times from 11:30 to 11:59) are then used for aggregation.  
+
+====
+[source,python]
+----
+include::example$api_algo/parent_order_stats/api_algo_parent_order_stats_ex10.py[]
+----
+====
+
+
+==== Results
+---
+image::api_algo/parent_order_stats/api_algo_parent_order_stats_ex10.png["api_algo_parent_order_stats_ex10.png",600,100]
+
+
+==== Figure
+---
+
+====
+[source,python]
+----
+include::example$api_algo/parent_order_stats/api_algo_parent_order_stats_ex10_fig.py[]
+----
+====
+
+++++
+<div id='chart5'></div>
+<script>
+	d3.csv("../_attachments/api_algo/parent_order_stats/raw/api_algo_parent_order_stats_ex10.csv").then((data) => {
+	
+
+		var trace1 = [{
+				x: data.map((column) => column.ArrivalTime),
+				y: data.map((column) => column.ArrivalMidPerfBPS),
+				type: 'line',
+				name: 'ArrivalMidPerfBPS'
+		}]
+		
+
+		var trace2 = [{
+				x: data.map((column) => column.ArrivalTime),
+				y: data.map((column) => column.TWAPMidPerfBPS),
+				type: 'line',
+				name: 'TWAPMidPerfBPS'
+		}]
+
+
+		var trace3 = [{
+				x: data.map((column) => column.ArrivalTime),
+				y: data.map((column) => column.RiskTransferPricePerfBPS),
+				type: 'line',
+				name: 'RiskTransferPricePerfBPS'
+		}]
+
+		
+		var char_data = trace1.concat(trace2,trace3); 
+		
+		var layout = {
+					title: 'Intraday pattern of different performance metrics',
+					showlegend: true,
+					width: 750,
+					height: 500,
+					};
+
+
+		var output_div = document.getElementById('chart5')
+		Plotly.newPlot(output_div, char_data, layout, { margin: { t: 0 } },{displayModeBar: false})
+		
+	})
+	
+</script>
+++++
+
+===  Algo performance in across different volatility regimes
+---
+
+Group modification function `hist` (stands for histogram buckets) splits the incoming variable range (`DailyVolatilityPct` in the below example) into a number of buckets of the same size. From `min` to `max` into several (10 in the below example) buckets.  Variables in the `select` operator are aggregated within those buckets. The mean values in each category are returned in the column with this variable name. Algo performance statistics in each bucket are calculated to study the dependence between this variable and algo performance. 
+
+The example below shows how selected performance statistics vary across different volatility regimes. 
+
+====
+[source,python]
+----
+include::example$api_algo/parent_order_stats/api_algo_parent_order_stats_ex11.py[]
+----
+====
+
+==== Results
+---
+image::api_algo/parent_order_stats/api_algo_parent_order_stats_ex11.png["api_algo_parent_order_stats_ex11.png",600,100]
+
+===  Algo performance in different geographic time-zone 
+---
+
+In this example we aggregate the data by grouping by `TimeZoneArrive` and `TimeZoneEnd`.
+This allows you to evaluate the performance of the algo runs by the geographic time-zone.
+
+====
+[source,python]
+----
+include::example$api_algo/parent_order_stats/api_algo_parent_order_stats_ex12.py[]
+----
+====
+
+==== Results
+---
+image::api_algo/parent_order_stats/api_algo_parent_order_stats_ex12.png["api_algo_parent_order_stats_ex12.png",700,100]
+
+
+== Field Definitions
+Refer to xref:analytics_algo.adoc[Analytics Algo] page for details and formula.
+
+---
+=== Possible Aggregation Columns (for `select` if `groupby` is present)
+---
+
+[%header,format=csv]
+|===
+include::example$api_algo/parent_order_stats/field-definitions_parent_order_stats.csv[]
+|===
+
+=== Possible Modification Function for `filter` and `groupby` 
+---
+
+[%header,format=csv]
+|===
+include::example$api_algo/parent_orders/field-definitions_parent_orders.csv[]
+|===

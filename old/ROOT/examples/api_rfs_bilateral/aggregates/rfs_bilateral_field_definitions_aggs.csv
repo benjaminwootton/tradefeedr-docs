@@ -1,0 +1,45 @@
+Name,Description
+Date,Date corresponding to TradeTime
+LP,Executing LP - counterparty to the trade.
+LPStream,Pricing Stream of Executing LP. For example No-Last-look
+Symbol,Currency pair. For example EURUSD.
+OrderStatus,"Status of an order it can be fill ""F"", reject ""R"", submitted ""S"" or cancelled ""C"""
+LiqPool,"Pool executing LP belongs to. Typically, liquidity pool is a group of LP aggregated according to some common logic by the end user."
+SkewStatus,"The underlying skew status of the counterparty, if they are skew safe or not"
+TradeTimeBucket,TradeTimeBucket - Time buckets every 15 mins (GMT) of the aggregated trades
+TradeQuantityUSD,USD Equivalent of TradeQuantity
+TradeQuantity,Traded quantity expressed in TradeCurrency
+SpreadPnLPM,Spread Paid  in $/million traded
+SpreadPnL,Spread Paid in USD
+NumEvents,The total number of trades that have taken place
+DecayPMNeg10s,Change in Tradefeedr mid price in $/m 10s  before the TradeTime
+DecayPMNeg5s,Change in Tradefeedr mid price in $/m 5s  before the TradeTime
+DecayPMNeg4s,Change in Tradefeedr mid price in $/m 4s  before the TradeTime
+DecayPMNeg3s,Change in Tradefeedr mid price in $/m 3s  before the TradeTime
+DecayPMNeg2s,Change in Tradefeedr mid price in $/m 2s  before the TradeTime
+DecayPMNeg1s,Change in Tradefeedr mid price in $/m 1s  before the TradeTime
+DecayPMNeg500ms,Change in Tradefeedr mid price in $/m 500ms  before the TradeTime
+DecayPMNeg250ms,Change in Tradefeedr mid price in $/m 250ms  before the TradeTime
+DecayPMNeg100ms,Change in Tradefeedr mid price in $/m 100ms  before the TradeTime
+DecayPM0,Always zero
+DecayPM50ms,Change in Tradefeedr mid price in $/m 50ms  after the TradeTime
+DecayPM100ms,Change in Tradefeedr mid price in $/m 100ms  after the TradeTime
+DecayPM250ms,Change in Tradefeedr mid price in $/m 250ms  after the TradeTime
+DecayPM500ms,Change in Tradefeedr mid price in $/m 500ms  after the TradeTime
+DecayPM1s,Change in Tradefeedr mid price in $/m 1s  after the TradeTime
+DecayPM2s,Change in Tradefeedr mid price in $/m 2s  after the TradeTime
+DecayPM3s,Change in Tradefeedr mid price in $/m 3s  after the TradeTime
+DecayPM4s,Change in Tradefeedr mid price in $/m 4s  after the TradeTime
+DecayPM5s,Change in Tradefeedr mid price in $/m 5s  after the TradeTime
+DecayPM10s,Change in Tradefeedr mid price in $/m 10s  after the TradeTime
+DecayPM15s,Change in Tradefeedr mid price in $/m 15s  after the TradeTime
+DecayPM20s,Change in Tradefeedr mid price in $/m 20s  after the TradeTime
+DecayPM30s,Change in Tradefeedr mid price in $/m 30s  after the TradeTime
+DecayPM45s,Change in Tradefeedr mid price in $/m 45s  after the TradeTime
+DecayPM1m,Change in Tradefeedr mid price in $/m 1m  after the TradeTime
+DecayPM2m,Change in Tradefeedr mid price in $/m 2m  after the TradeTime
+DecayPM3m,Change in Tradefeedr mid price in $/m 3m  after the TradeTime
+DecayPM4m,Change in Tradefeedr mid price in $/m 4m  after the TradeTime
+DecayPM5m,Change in Tradefeedr mid price in $/m 5m  after the TradeTime
+DecayPM10m,Change in Tradefeedr mid price in $/m 10m  after the TradeTime
+Account,Name of the underlying client this executed on behalf of

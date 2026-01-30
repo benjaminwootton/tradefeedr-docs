@@ -1,0 +1,17 @@
+Name,Description
+NumberOfFills,The total number of trades that filled
+NumberOfRejects,The total number of trades that where rejected
+FillVolume,Total volume of the trades that where filled
+RejectVolume,Total volume of the trades that where rejected
+AvgTradeSizeUSD,The average size in USD of a trade
+SpreadPaid,Spread Paid (expressed $/m) - relative difference between price paid and mid price. Positve number means buying above the mid and selling below the mid.
+RejectCost,"	
+ Cost of rejected trade (in $/m).  Relative move in mid price from the time rejection message was received (time t) to time t + X miliseconds X millisecond can be selected by the used. Side adjusted. Positive number means price goes up after buy and down after sell.     "
+ToxicityOfFills,"	
+ Relative move in mid price from the time trade was done (time t) to time t + X miliseconds.  X millisecond can be selected by the used. Side adjusted"
+RejectToFill,Ratio of the RejectedVolume to the FillVolume
+EffectiveSpread,SpreadPaid +  RejectRatio*RejectCosts (in $/m)
+VolumeShare,Is the share of total fill volume
+RejectCostUSD,"Is RejectVolume times RejectCost. It is expressed in USD rather than millions of USD of rejections
+
+"

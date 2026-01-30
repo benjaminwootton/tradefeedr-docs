@@ -1,0 +1,15 @@
+Name,Description
+LP,Executing LP - counterparty to the trade.
+NumberOfParticipations,Number of RFQ requests participated in
+NumberOfWins,Number of RFQ requests won
+ExpectedWins,NumberOfParticipations * ExpectedWinRatio
+ActualWinRatio,(NumberOfWins%NumberOfParticipations)*100
+ExpectedWinRatio,(ExpectedWins %NumberOfParticipations)*100
+VolumeParticipated,Volume of the RFQ requests participated in
+VolumeWon,Volume  of RFQ requests won
+ExpectedWinVolume,ExpectedWinRatio * TradeQuantityUSD
+ActualVolumeWinRatio,(VolumeWon%VolumeParticipated)*100
+ExpectedVolumeWinRatio,(ExpectedWinVolume % VolumeParticipated)*100
+AverageRFQPanelSize,The average size of the pannel of LPs
+WinPerformanceScore,ActualWinRatio - ExpectedWinRatio
+VolumePerformanceScore,ActualVolumeWinRatio - ExpectedVolumeWinRatio

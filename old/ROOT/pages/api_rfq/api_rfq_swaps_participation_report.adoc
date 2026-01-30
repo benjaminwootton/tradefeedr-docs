@@ -1,0 +1,35 @@
+= Swaps Participation Report- `v1/fx/rfq-swaps/participation-report`
+
+== Introduction
+The `v1/fx/rfq-swaps/participation-report` endpoint returns a table summarises the swaps RFQ participation rate by `LP`. 
+
+This endpoint is used to study the hit ratios of the requested swaps RFQs, you can rank each `LP` against various performance ratios. 
+Such as `ActualWinRatio`, `ActualVolumeWinRatio`, `WinPerformanceScore` etc. 
+
+You have the ability to see the total requested RFQs (`NumberOfParticipations`),`NumberOfWins` also see how competitive the RFQ stack is. 
+This done by looking at the `AverageRFQPanelSize` larger this number more `LP` s competing to price the swap RFQ. 
+
+From this number the expected win rate is derived `ExpectedWinRatio`, higher the `AverageRFQPanelSize` smaller the `ExpectedWinRatio`, inversely proportional. 
+
+== API Specification
+
+The API endpoint requires a JSON object representing query logic similar to SQL and containing the following fields:
+
+* `groupby` - which fields the results will be aggregated by
+* `select`  - which fields should be returned in the end result. For example `NumberOfWins`
+* `filter`  - how the underlying data should be filtered
+
+**Note:**  The endpoint requires a `LP` `filter` to return a result.
+
+== Example 
+Please refer to xref:api_rfq/api_rfq_outrights_participation_report.adoc[v1/fx/rfq-outrights/participation-report] to see examples
+
+
+== Field Definitions
+
+Refer to xref:analytics_rfq.adoc[Analytics RFQ] page for details and formula.
+
+[%header,format=csv, cols=["60%", "40%"]]
+|===
+include::example$api_rfq/outrights/participation_report/rfq_field_definitions_participation_report.csv[]
+|===

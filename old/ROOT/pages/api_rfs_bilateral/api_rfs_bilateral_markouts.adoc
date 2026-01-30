@@ -1,0 +1,153 @@
+= Bilateral Markouts
+
+== Introduction
+The `v1_fx_rfs_bilateral-markouts` endpoint is used to study the markouts. It returns the aggregated markout curves information in a number of tables.
+The data is anonymized by masking the `LP` names. 
+
+These tables include: 
+
+* `Markout` - Markout Curves starting at SpreadPNL at time zero. Those curve represent the PnL of counterparty.
+* `MarkoutsAtZero`  - Markout Curves starting at 0 at time 0. Those curves represent price impact curves and do not include Spread Paid.
+* `MarkoutsAtZeroAverage` - Average (as opposed to weighted average) version of MarkoutsAtZero. 
+* `Volatilities` - Standard deviation of each markout point for confidence intervals.
+
+Mark-out Curves represent market dynamics before and after each trading event (fill, reject or order placement).
+
+Refer to xref:analytics_bilateral_sharing.adoc[RFS Bilateral Sharing] page for details on how bilateral sharing works.
+
+== API Specification
+
+The API endpoint requires a JSON object representing query logic similiar to SQL and containing the following fields:
+
+* `groupby` - what fields to aggregate markouts by
+* `select`  - which fields should be returned in the end result.
+* `filter`  - how the underlying data should be filtered
+
+**Note:** This API endpoint is similar to the xref:api_rfs/api_rfs_markouts.adoc[v1/fx/rfs/markouts] endpoint. The difference is that this API endpoint sources aggregated data and masks the `LP` names.
+
+
+== Example 
+For more examples and markout definitions refer to xref:api_rfs/api_rfs_markouts.adoc[v1/fx/rfs/markouts]
+
+**Note**: For display purposes we have limited the number of rows to 5 and and columns to 10.
+
+=== By LP, Symbol and OrderStatus
+---
+In this example we query for the PnL curves `Markouts` and select the points in time of the markout curve.
+Then filter for Fills only.
+
+====
+[source,python]
+----
+include::example$api_rfs_bilateral/markouts/api_rfs_bilateral_markouts.py[]
+----
+====
+
+==== Results
+---
+image::api_rfs_bilateral/markouts/api_rfs_bilateral_markouts_ex1.png["api_rfs_bilateral_markouts_ex1.png"]
+
+==== Figure
+---
+
+====
+[source,python]
+----
+include::example$api_rfs_bilateral/markouts/api_rfs_bilateral_markouts_ex1_fig.py[]
+----
+====
+++++
+<div id='chart1'></div>
+<script>
+	d3.csv("../_attachments/api_rfs_bilateral/markouts/api_rfs_bilateral_markouts_ex1_mod.csv").then((data) => {
+		var trace1 = [{
+				x: data.map((row) => row.Time),
+				y: data.map((row) => row.LP1masked),
+                mode: 'lines',
+				type: 'lines',
+				name: 'LP1masked'
+		}]
+		
+		var trace2 = [{
+				x: data.map((row) => row.Time),
+				y: data.map((row) => row.LP2masked),
+                mode: 'lines',
+				type: 'lines',
+				name: 'LP2masked'
+		}]
+		
+		var trace3 = [{
+				x: data.map((row) => row.Time),
+				y: data.map((row) => row.LP3masked),
+                mode: 'lines',
+				type: 'lines',
+				name: 'LP3masked'
+		}]
+		
+		var trace4 = [{
+				x: data.map((row) => row.Time),
+				y: data.map((row) => row.LP4masked),
+                mode: 'lines',
+				type: 'lines',
+				name: 'LP4masked'
+		}]
+        
+		var trace5 = [{
+				x: data.map((row) => row.Time),
+				y: data.map((row) => row.LP5masked),
+                mode: 'lines',
+				type: 'lines',
+				name: 'LP5masked'
+		}]
+        
+		var trace6 = [{
+				x: data.map((row) => row.Time),
+				y: data.map((row) => row.LP6masked),
+                mode: 'lines',
+				type: 'lines',
+				name: 'LP6masked'
+		}]
+		
+		var trace7 = [{
+				x: data.map((row) => row.Time),
+				y: data.map((row) => row.TRADEFEEDR),
+                mode: 'lines',
+				type: 'lines',
+				name: 'TRADEFEEDR'
+		}]
+		var char_data = trace1.concat(trace2,trace3,trace4, trace5, trace6, trace7); 
+		
+		var layout = {
+					title: 'Markout Curves',
+					showlegend: true,
+					width: 750,
+					height: 500,
+                    xaxis: {
+                        title: {
+                          text: 'Time'
+                          }
+                        },
+                   
+                  yaxis: {
+                    title: {
+                      text: 'Markouts'
+                      }
+                    }                    
+					};
+
+
+		var output_div = document.getElementById('chart1')
+		Plotly.newPlot(output_div, char_data, layout, { margin: { t: 0 } },{displayModeBar: false})
+	})
+</script>
+++++
+
+
+== Field Definitions
+
+Refer to xref:analytics_rfs.adoc[Analytics RFS] page for details and formula.
+
+[%header,format=csv]
+|===
+include::example$api_rfs/markouts/rfs_field_definitions_markouts.csv[]
+|===

@@ -1,0 +1,21 @@
+= Analytics
+
+This section of the documentation site provide you a detailed account of the metrics and field descriptions.
+For Algos, RFS, RFS Bilateral and RFQ. The pages also contain formula and figures to help to explain the various metrics.
+
+
+Tradefeedr separates analytics by their workflow:
+
+* xref:analytics_algo.adoc[Algo Execution]
+* xref:analytics_rfs.adoc[RFS Execution]
+* xref:analytics_rfq.adoc[RFQ Execution]
+* xref:analytics_bilateral_sharing.adoc[RFS Bilateral Sharing]
+
+This section also contains a comprehensive description on the Tradefeedr models being used.
+The purpose of them and the reasons for the model parameter selection.
+
+There are also workflow-spanning analytics:
+
+* xref:analytics_mid_price.adoc[Tradefeedr Mid Price]
+* xref:analytics_risk_transfer_price.adoc[Risk Transfer Price]
+* xref:analytics_algo_peer_universe.adoc[Algo Peer Universe]

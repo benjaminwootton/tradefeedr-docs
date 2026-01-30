@@ -1,0 +1,237 @@
+= Swaps Opportunity Report
+
+== Introduction
+The `v1/fx/rfq-swaps/opportunity-report` endpoint generates an opportunity report which displays the `OutCome` of the swaps RFQ if it was `WON` or `Lost`.
+From this piece of information you can review pricing to see why the `LP` `LOST` or `WON` the RFQ. 
+
+You can compare the price they were quoted for the swaps RFQ the `NearPrice` and `FarPrice`, against the `NearPriceShown` and `FarPriceShown`(price that won the RFQ). 
+To see how far the price was off the winning quote. They can also review the volume of the `LOST` trades that where traded away with another `LP`.
+
+== API Specification
+
+The API endpoint requires a JSON object representing query logic similar to SQL and containing the following fields:
+
+* `select`  - which fields should be returned in the end result. For example `NearPrice`.
+* `filter`  - how the underlying data should be filtered
+
+**Note:**  The endpoint requires a `LP` `filter` to return a result.
+
+== Example 
+**Note**: For display purposes we have limited the number of rows to 5 and and columns to 10.
+
+=== Default Results
+---
+In the below example the results show the default columns selected when no select option is passed.
+
+====
+[source,python]
+----
+include::example$api_rfq/swaps/opportunity_report/api_rfq_swaps_opportunity_report.py[]
+----
+====
+
+==== Results
+---
+image::api_rfq/swaps/opportunity_report/api_rfq_swaps_opportunity_report_ex1.png["api_rfq_swaps_opportunity_report_ex1.png"]
+
+==== Figure
+---
+
+
+====
+[source,python]
+----
+include::example$api_rfq/swaps/opportunity_report/api_rfq_swaps_opportunity_report_ex1_fig.py[]
+----
+====
+
+
+++++
+<div id='chart1'></div>
+<script>
+	d3.csv("../_attachments/api_rfq/swaps/opportunity_report/raw/api_rfq_swaps_opportunity_report_ex1.csv").then((data) => {
+    
+var selected = 'AUDUSD';
+		const data_audusd = data.filter(({
+		  Symbol
+		}) => selected.includes(Symbol));  
+  
+var selected = 'WON';
+		const data_audusd_won = data_audusd.filter(({
+		  OutCome
+		}) => selected.includes(OutCome));    
+       
+var selected = 'LOST';
+		const data_audusd_lost = data_audusd.filter(({
+		  OutCome
+		}) => selected.includes(OutCome));    
+  
+		var trace1 = [{
+				x: data_audusd_won.map((row) => row.TradeTime),
+				y: data_audusd_won.map((row) => row.NearPrice),
+                mode: 'markers',
+				type: 'scatter',
+				name: 'WON'
+		}]
+		
+
+var trace2 = [{
+				x: data_audusd_lost.map((row) => row.TradeTime),
+				y: data_audusd_lost.map((row) => row.NearPrice),
+                mode: 'markers',
+				type: 'scatter',
+				name: 'LOST'
+		}]
+		
+
+		var char_data = trace1.concat(trace2); 
+		
+		var layout = {
+					title: 'Scatter plot of AUDUSD PriceShown by OutCome',
+					showlegend: true,
+					width: 750,
+					height: 500,
+                    xaxis: {
+                        title: {
+                          text: 'TradeTime'
+                          }
+                        },
+                   
+                    yaxis: {
+                    title: {
+                      text: 'NearPrice'
+                      },
+                      tickformat : '.3'
+                    }                        
+					};                       
+
+		var output_div = document.getElementById('chart1')
+		Plotly.newPlot(output_div, char_data, layout, { margin: { t: 0 } },{displayModeBar: false})
+	})
+</script>
+++++
+
+=== Selecting All `LP` s for a Date Range 
+---
+In this example we generate a opportunity report selecting all the `LP` s using a wildcard search.
+
+====
+[source,python]
+----
+include::example$api_rfq/swaps/opportunity_report/api_rfq_swaps_opportunity_report_ex2.py[]
+----
+====
+
+==== Results
+---
+image::api_rfq/swaps/opportunity_report/api_rfq_swaps_opportunity_report_ex2.png["api_rfq_swaps_opportunity_report_ex2.png"]
+
+=== Select Losing RFQs only
+---
+Below we have filtered the `OutCome` column to select only the cases where the RFQ was `LOST`. 
+You can review these cases to see how far off the price was from the winning quote.
+
+====
+[source,python]
+----
+include::example$api_rfq/swaps/opportunity_report/api_rfq_swaps_opportunity_report_ex3.py[]
+----
+====
+
+==== Results
+---
+image::api_rfq/swaps/opportunity_report/api_rfq_swaps_opportunity_report_ex3.png["api_rfq_swaps_opportunity_report_ex3.png"]
+
+==== Figure
+---
+
+
+====
+[source,python]
+----
+include::example$api_rfq/swaps/opportunity_report/api_rfq_swaps_opportunity_report_ex3_fig.py[]
+----
+====
+
+
+++++
+<div id='chart2'></div>
+<script>
+	d3.csv("../_attachments/api_rfq/swaps/opportunity_report/raw/api_rfq_swaps_opportunity_report_ex3.csv").then((data) => {
+    
+var selected = 'AUD';
+		const data_audusd = data.filter(({
+		  TradeCcy
+		}) => selected.includes(TradeCcy));  
+  
+  
+		var trace1 = [{
+				x: data_audusd.map((row) => row.TradeTime),
+				y: data_audusd.map((row) => row.NearPrice),
+                mode: 'markers',
+				type: 'scatter',
+				name: 'NearPrice'
+		}]
+		
+        
+		var trace2 = [{
+				x: data_audusd.map((row) => row.TradeTime),
+				y: data_audusd.map((row) => row.NearPriceShown),
+                mode: 'markers',
+				type: 'scatter',
+				name: 'NearPriceShown'
+		}]
+		
+
+		var trace3 = [{
+				x: data_audusd.map((row) => row.TradeTime),
+				y: data_audusd.map((row) => row.FarPrice),
+                mode: 'markers',
+				type: 'scatter',
+				name: 'FarPrice'
+		}]
+		
+
+		var trace4 = [{
+				x: data_audusd.map((row) => row.TradeTime),
+				y: data_audusd.map((row) => row.FarPriceShown),
+                mode: 'markers',
+				type: 'scatter',
+				name: 'FarPriceShown'
+		}]
+		
+
+		var char_data = trace1.concat(trace2, trace3, trace4); 
+		
+		var layout = {
+					title: 'Selecting Losing RFQs only (TradeCcy:AUD)',
+					showlegend: true,
+					width: 750,
+					height: 500,
+                    xaxis: {
+                        title: {
+                          text: 'TradeTime'
+                          }
+                        },
+                   
+                    yaxis: {
+                    title: {
+                      text: 'Price'
+                      },
+                      tickformat : '.4f'
+                    }      
+					};
+
+
+		var output_div = document.getElementById('chart2')
+		Plotly.newPlot(output_div, char_data, layout, { margin: { t: 0 } },{displayModeBar: false})
+	})
+</script>
+++++
+
+== Field Definitions
+
+[%header,format=csv, cols=["60%", "40%"]]
+|===
+include::example$api_rfq/swaps/opportunity_report/rfq_field_definitions_opportunity_report.csv[]
+|===

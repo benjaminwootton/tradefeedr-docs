@@ -1,0 +1,22 @@
+Name,Description
+LP,Executing LP - counterparty to the trade.
+OutCome,If the trade was WON or LOST.
+Symbol,Currency pair. For example EURUSD.
+Side,"Trade side. ""B” for buy and ""S” for sell."
+NearTradeQuantity,Neg leg traded quantity expressed in TradeCurrency
+FarTradeQuantity,Far leg traded quantity expressed in TradeCurrency
+TradeCcy,"Denomination Currency for TradeQuantity and OrderQuantity. For example
+    EUR."
+TradeTime,TradeTime - Time (GMT) when the trade was filled
+FarPrice,Price of the far leg quoted
+NearPrice,Price of the near leg quoted
+NearForwardPoints,Near leg forward point quoted
+FarForwardPoints,Far leg forward point quoted
+NearPriceShown,Price the near leg traded at
+FarPriceShown,Price the far leg traded at
+NearFPShown,Near leg forward point traded
+FarFPShown,Far leg forward point traded
+ProductType,Type of product traded. For example SPOT
+ShownFP,The forward point that was shown
+WinningFP,The winning forward point
+MissedFP,Difference between the WinningFP and ShownFP

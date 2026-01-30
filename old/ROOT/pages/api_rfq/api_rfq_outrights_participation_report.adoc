@@ -1,0 +1,405 @@
+= Outrights Participation Report
+
+== Introduction
+This endpoint returns a table summarises the outrights RFQ participation rate by `LP`. 
+
+The `v1/fx/rfq-outrights/participation-report` endpoint is used to study the hit ratios of the requested outrights RFQs, you can rank each `LP` against various performance ratios. 
+Such as `ActualWinRatio`, `ActualVolumeWinRatio`, `WinPerformanceScore` etc. 
+
+You have the ability to see the total requested RFQs (`NumberOfParticipations`),`NumberOfWins` also see how competitive the RFQ stack is. 
+This done by looking at the `AverageRFQPanelSize` larger this number more `LP`s competing to price the outright RFQ. 
+
+From this number the expected win rate is derived `ExpectedWinRatio`, higher the `AverageRFQPanelSize` smaller the `ExpectedWinRatio`, inversely proportional. 
+
+== API Specification
+
+The API endpoint requires a JSON object representing query logic similar to SQL and containing the following fields:
+
+* `groupby` - which fields the results will be aggregated by
+* `select`  - which fields should be returned in the end result. For example `NumberOfWins`
+* `filter`  - how the underlying data should be filtered
+
+**Note:**  The endpoint requires a `LP` `filter` to return a result.
+
+== Example 
+**Note**: For display purposes we have limited the number of rows to 5 and and columns to 10.
+
+=== Default Results
+---
+In the below example the results show the default columns selected when no select option is passed.
+
+====
+[source,python]
+----
+include::example$api_rfq/outrights/participation_report/api_rfq_outrights_participation_report.py[]
+----
+====
+
+==== Results
+---
+image::api_rfq/outrights/participation_report/api_rfq_outrights_participation_report_ex1.png["api_rfq_outrights_participation_report_ex1.png"]
+
+==== Figure
+---
+
+====
+[source,python]
+----
+include::example$api_rfq/outrights/participation_report/api_rfq_outrights_participation_report_ex1_fig.py[]
+----
+====
+
+
+++++
+<div id='chart1'></div>
+<script>
+	d3.csv("../_attachments/api_rfq/outrights/participation_report/raw/api_rfq_outrights_participation_report_ex1.csv").then((data) => {
+
+  
+		var trace1 = [{
+				x: data.map((row) => row.LP),
+				y: data.map((row) => row.NumberOfWins),
+				type: 'bar',
+				name: 'NumberOfWins'
+		}]
+		
+
+		var trace2 = [{
+				x: data.map((row) => row.LP),
+				y: data.map((row) => row.ExpectedWins),
+				type: 'bar',
+				name: 'ExpectedWins'
+		}]
+		
+
+		var char_data = trace1.concat(trace2); 
+		
+		var layout = {
+					title: 'Number of Outright RFQs Won by LP',
+					showlegend: true,
+					width: 750,
+					height: 500,
+                    xaxis: {
+                        title: {
+                          text: 'LP'
+                          }
+                        },
+                   
+                  yaxis: {
+                    title: {
+                      text: 'Frequency'
+                      }
+                    }                        
+					};                          
+
+		var output_div = document.getElementById('chart1')
+		Plotly.newPlot(output_div, char_data, layout, { margin: { t: 0 } },{displayModeBar: false})
+	})
+</script>
+++++
+
+
+=== Hit Ratios  by `LP`
+---
+Below we have used the `select` parameter to create a report to show the win rates of the RFQ requests by `LP`.
+
+====
+[source,python]
+----
+include::example$api_rfq/outrights/participation_report/api_rfq_outrights_participation_report_ex2.py[]
+----
+====
+
+==== Results
+---
+image::api_rfq/outrights/participation_report/api_rfq_outrights_participation_report_ex2.png["api_rfq_outrights_participation_report_ex2.png]
+
+==== Figure
+---
+
+====
+[source,python]
+----
+include::example$api_rfq/outrights/participation_report/api_rfq_outrights_participation_report_ex2_fig.py[]
+----
+====
+
+
+++++
+<div id='chart2'></div>
+<script>
+	d3.csv("../_attachments/api_rfq/outrights/participation_report/raw/api_rfq_outrights_participation_report_ex2.csv").then((data) => {
+
+        
+		var trace1 = [{
+				x: data.map((row) => row.LP),
+				y: data.map((row) => row.WinPerformanceScore),
+				type: 'bar',
+				name: 'WinPerformanceScore'
+		}]
+		
+
+		var char_data = trace1; 
+		
+		var layout = {
+					title: 'WinPerformanceScore by LP',
+					showlegend: true,
+					width: 750,
+					height: 500,
+                    xaxis: {
+                        title: {
+                          text: 'LP'
+                          }
+                        },
+                   
+                  yaxis: {
+                    title: {
+                      text: 'WinPerformanceScore'
+                      }
+                    }                        
+					};                          
+
+
+		var output_div = document.getElementById('chart2')
+		Plotly.newPlot(output_div, char_data, layout, { margin: { t: 0 } },{displayModeBar: false})
+	})
+</script>
+++++
+
+
+
+
+=== Volume metrics by `LP`
+---
+Below we have used the `select` parameter to create a report to show the volume won of the RFQ requests by `LP`.
+
+====
+[source,python]
+----
+include::example$api_rfq/outrights/participation_report/api_rfq_outrights_participation_report_ex3.py[]
+----
+====
+
+==== Results
+---
+image::api_rfq/outrights/participation_report/api_rfq_outrights_participation_report_ex3.png["api_rfq_outrights_participation_report_ex3.png]
+
+==== Figure
+---
+
+====
+[source,python]
+----
+include::example$api_rfq/outrights/participation_report/api_rfq_outrights_participation_report_ex3_fig.py[]
+----
+====
+
+
+++++
+<div id='chart3'></div>
+<script>
+	d3.csv("../_attachments/api_rfq/outrights/participation_report/raw/api_rfq_outrights_participation_report_ex3.csv").then((data) => {
+
+
+		var trace1 = [{
+				x: data.map((row) => row.LP),
+				y: data.map((row) => row.VolumePerformanceScore),
+				type: 'bar',
+				name: 'VolumePerformanceScore'
+		}]
+		
+
+		var char_data = trace1; 
+		
+		var layout = {
+					title: 'VolumePerformanceScoreby LP',
+					showlegend: true,
+					width: 750,
+					height: 500,
+                    xaxis: {
+                        title: {
+                          text: 'LP'
+                          }
+                        },
+                   
+                  yaxis: {
+                    title: {
+                      text: 'VolumePerformanceScore'
+                      }
+                    }                        
+					};   
+
+
+		var output_div = document.getElementById('chart3')
+		Plotly.newPlot(output_div, char_data, layout, { margin: { t: 0 } },{displayModeBar: false})
+	})
+</script>
+++++
+
+
+===  Comparing WinRatios
+---
+Below we have used the `select` parameter to create a report to compare the `ActualWinRatio` vs `ActualVolumeWinRatio`.
+
+A high `ActualWinRatio` vs a low `ActualVolumeWinRatio` indicates that the `LP` is competitive with smaller ticket RFQs but not larger volume RFQ requests.
+
+A high `ActualVolumeWinRatio` vs a low `ActualWinRatio` indicates that the `LP` is winning larger volume trades but not as competitive on the small volume tickets.
+
+====
+[source,python]
+----
+include::example$api_rfq/outrights/participation_report/api_rfq_outrights_participation_report_ex4.py[]
+----
+====
+
+==== Results
+---
+image::api_rfq/outrights/participation_report/api_rfq_outrights_participation_report_ex4.png["api_rfq_outrights_participation_report_ex4.png, 800,100]
+
+==== Figure
+---
+
+====
+[source,python]
+----
+include::example$api_rfq/outrights/participation_report/api_rfq_outrights_participation_report_ex4_fig.py[]
+----
+====
+
+
+++++
+<div id='chart4'></div>
+<script>
+	d3.csv("../_attachments/api_rfq/outrights/participation_report/raw/api_rfq_outrights_participation_report_ex4.csv").then((data) => {
+
+  
+		var trace1 = [{
+				x: data.map((row) => row.LP),
+				y: data.map((row) => row.ActualWinRatio),
+				type: 'bar',
+				name: 'ActualWinRatio'
+		}]
+		
+
+		var trace2 = [{
+				x: data.map((row) => row.LP),
+				y: data.map((row) => row.ActualVolumeWinRatio),
+				type: 'bar',
+				name: 'ActualVolumeWinRatio'
+		}]
+		
+
+
+		var char_data = trace1.concat(trace2); 
+		
+		var layout = {
+					title: 'Comparing WinRatios',
+					showlegend: true,
+					width: 750,
+					height: 500,
+                    xaxis: {
+                        title: {
+                          text: 'LP'
+                          }
+                        },
+                   
+                  yaxis: {
+                    title: {
+                      text: 'WinRatio'
+                      }
+                    }                      
+					};
+
+
+		var output_div = document.getElementById('chart4')
+		Plotly.newPlot(output_div, char_data, layout, { margin: { t: 0 } },{displayModeBar: false})
+	})
+</script>
+++++
+
+=== Groupby `LP` and `Symbol` 
+---
+In the below example we `groupby` `LP` and `Symbol`. 
+
+====
+[source,python]
+----
+include::example$api_rfq/outrights/participation_report/api_rfq_outrights_participation_report_ex5.py[]
+----
+====
+
+==== Results
+---
+image::api_rfq/outrights/participation_report/api_rfq_outrights_participation_report_ex5.png["api_rfq_outrights_participation_report_ex5.png]
+
+=== Filtering for lower than expected win rate
+---
+Below we have filtered the `WinPerformanceScore` to highlight the cases where an `LP` is winning RFQs less than the expected rate. (`ActualWinRatio`< `ExpectedWinRatio`).
+The `ExpectedWinRatio` is 1/`AverageRFQPanelSize`.
+
+====
+[source,python]
+----
+include::example$api_rfq/outrights/participation_report/api_rfq_outrights_participation_report_ex6.py[]
+----
+====
+
+==== Results
+---
+image::api_rfq/outrights/participation_report/api_rfq_outrights_participation_report_ex6.png["api_rfq_outrights_participation_report_ex6.png]
+
+===   Filtering for the Time of Day
+---
+In the below example we show you how to filter `TradeTime`.
+
+====
+[source,python]
+----
+include::example$api_rfq/outrights/participation_report/api_rfq_outrights_participation_report_ex7.py[]
+----
+====
+
+==== Results
+---
+image::api_rfq/outrights/participation_report/api_rfq_outrights_participation_report_ex7.png["api_rfq_outrights_participation_report_ex7.png]
+
+=== Filtering for Larger Trades
+---
+In the below example we filter the `TradeQuantityUSD` for trades larger than $100M.
+You then can see which `LP` s  are more competitive at larger RFQ trades. 
+
+====
+[source,python]
+----
+include::example$api_rfq/outrights/participation_report/api_rfq_outrights_participation_report_ex8.py[]
+----
+====
+
+==== Results
+---
+image::api_rfq/outrights/participation_report/api_rfq_outrights_participation_report_ex8.png["api_rfq_outrights_participation_report_ex8.png]
+
+===  Filtering for Smaller Trades
+---
+In the below example we filter the `TradeQuantityUSD` for trades less than $20M.
+You then can see which `LP` s are more competitive at smaller RFQ trades. 
+
+====
+[source,python]
+----
+include::example$api_rfq/outrights/participation_report/api_rfq_outrights_participation_report_ex9.py[]
+----
+====
+
+==== Results
+---
+image::api_rfq/outrights/participation_report/api_rfq_outrights_participation_report_ex9.png["api_rfq_outrights_participation_report_ex9.png]
+
+== Field Definitions
+
+Refer to xref:analytics_rfq.adoc[Analytics RFQ] page for details and formula.
+
+[%header,format=csv, cols=["60%", "40%"]]
+|===
+include::example$api_rfq/outrights/participation_report/rfq_field_definitions_participation_report.csv[]
+|===

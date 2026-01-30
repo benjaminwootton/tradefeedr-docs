@@ -1,0 +1,179 @@
+= RFS Analytics
+
+==  Introduction
+RFS is the request for streaming. Prices for different currency pair/instrument and for different quantities are sent down a connection by the Liquidity providers (LPs).
+The connection maybe with one  liquidity consumer (LC) or multiple.
+
+Tradefeedr supports both forms of RFS:
+
+ *  *Aggregated* / sweep flow where the liquidity consumer evaluates multiple liquidity providers and trades at the same time to fill the order
+ *  *Full Amount* / single ticket flow where the full order is traded with one LP
+
+==  Trade Life Cycle
+
+Trading is assumed to be happening in at *TradeTime*. This is the time the trader receives execution report (DONE) of the trades.
+
+`ArrivalTime` is the time the trade request was sent to execute the trade.
+In case the trader is executing on a specific quote (as is the case for majority of FX trading) the QuoteTime can be recorded as well.
+
+Each trade is marked to market using Tradefeedr mid as shown in the figure below. For each trade Tradefeedr system uses `Price` and `Side` to calculate trade related metrics as shown below.
+
+=== Figure
+---
+image::rfs_execution_chart.png["RFS Execution"]
+
+== Spread PnL
+The difference between mid-price and execution prices is called Spread PnL (Figure 1).
+The terminology comes from market makers as this is what they earn if they cover their risk at mid or they have received exactly offsetting spread at the same time.
+
+Spread PnL can be calculated as:
+
+[latexmath]
+++++
+SpreadPnL= I_{=1  if  Buy}^{=-1 if Sell} × (Price - mid) × TradeQuantity
+++++
+
+In the above equation the indicator is equal to 1 if the Side is Buy meaning that buying about the mid is positive spread PnL (which is normally the case for aggressive trading).
+Bigger trades would have larger PnL hence adjusting it for the trade size is important to compare across trades.
+
+[latexmath]
+++++
+SpreadPnLPM=10^6 × \frac{Spread PnL}{TradeQuantity}
+++++
+
+For example, if the market mid is 1.20 and we buy at 1.2001, using the formula above we calculate spread paid to be equal to:
+
+
+[latexmath]
+++++
+10^6 ×\frac{(1.2001-1.20)}{1.20} =  83.3 $/m.
+++++
+
+[latexmath]
+++++
+10^4 ×\frac{(1.2001-1.20)}{1.20} =  0.83 bps.
+++++
+
+Note that this is unit-less measure (USD per million USD traded). To calculate total USD value of spread
+paid we need to multiply it by TradeQuantityUSD (also available via Tradefeedr API) and adjusted by either
+latexmath:[10^6](for $/m) or latexmath:[10^4](for BPS measure)
+
+== Markout (Decay) Curves
+
+
+=== Markout as Market Impact
+---
+Market impact markout measures short term directionality of the trade.
+Let’s consider the figure above again and assume that a bank’s client buys at the ask price.
+Price goes upward after the buy and hence this trade PnL is always positive.
+Decay from trade time t to some future time T=t+τ  can be expressed as:
+
+[latexmath]
+++++
+DecayPnL(t,T)=(I_{=1 if Buy}^{=-1 if Sell} ) × (mid_T - mid_t )×TradeQuantity
+++++
+
+Therefore, decay is purely determined by the mid-price evolution over time (so Tradefeedr mid is used).
+Again just like with Spread PnL, decay of larger trades is naturally larger. Therefore to simplify the cross trade comparison we need to adjust it by the trade size as follows:
+
+
+[latexmath]
+++++
+Decay PnL PM(t,T)=I_{=1 if Buy}^{=-1 if Sell} × 10^6 ×\frac{mid_T -mid_t }{mid_t}
+++++
+
+Hence, decays PnL per million is just percentage change in mid-price expressed in "per million" units.
+
+
+=== Spread Adjusted Markout Curve
+---
+
+The decay terminology comes from market makers and quantifies how much does the SpreadPnL
+received from the client decays after say 1 minute.
+
+For example, if client bought at $50/m above the mid, the market maker expects to make $50 per million
+if offsetting trade happens before the market moves. However, if the market moves $20/m in clients
+favour then offsetting trading for the market maker will only deliver $30/m. Hence the potential
+SpreadPnL "decayed" by $20/m.
+
+To express "LP PnL" the markout curve can be calculated from the initial spread paid directly (as opposed
+to from zero). It can also be inverted to represents the PnL of the counterparty to the trade.
+
+The formal definition is as per below:
+
+
+[latexmath]
+++++
+\text{MarkoutPnLPM(t)}=I_{=1 if Buy}^{=-1 if Sell} × 10^6 × \frac{(Price-mid_t )}{mid_0}
+++++
+
+Decay or reversion are an important measure for market makers as trades with string positive directionality are less attractive for market makers.
+
+
+==  Markout Curves Aggregation
+
+A sample report is given in the figure below.
+In this specific example the market curves are aggregated across LPs and trade Status (Reject versus Fill).
+The shades around the curves are one standard deviation away to indicate the precision of the market impact estimates.
+At least three possible presentation scenarios are available.
+
+* "Weighted" market impact from the trader perspective where aggregation of trade-by-trade market impacts is done by trade size.  Trader perspective just mean that if the price goes up after the buy trade the market impact is positive (as opposed to LP view below, as LP is on the opposite side of the same trade)
+
+* "Average" market impact from traders perspective is the average of all trade-by-trade market impacts. This highlights the traders ability to forecast the market rather than "impact" it. Hence, small trades have same weight as big ones. The difference between weighted and average market impact can give an idea whether the trader actually changes supply/demand balance or is good in short term alpha.
+
+* "LP View" market impact. This is the market impact seen from LP perspective.  The PnL is exactly opposite to that of the trader. When a trade is done against the LP the instantaneous PnL of this trade is Spread PnL.  If the trade was a buy order and the price goes up LP PnL starts to decrease. Therefore, the curve is downward sloping. The faster the curve goes down, the more difficult is the flow received by an LP compared to their peers. Also, normally rejected trades are more toxic than fills as the LP has an alpha and makes fill/reject decision intelligently.
+
+=== Figure
+---
+
+image::rfs_markout_plot.png["RFS Markout"]
+
+
+=== Rejections
+---
+Quantifying rejection costs is typically more complex. If the order re-trial data is available (rejects and
+subsequent fills and aggregated under one `ParentOrderID`) then it is possible to calculate actual slippage
+due to rejects.
+
+However, in most cases this information is not available. If the trade is just a retry under a new orderID
+then the connection between current rejected order and future fills order is lost. In this case we resort to
+theoretical slippage which is defined as the mid-price over the next "X" milliseconds after the trade is
+rejected. The exact "X" is defined by you.
+
+=== Metrics Summary
+---
+The performance metric one can consider is Effective Spread which can be defined as:
+
+[latexmath]
+++++
+\text{Effective Spread} = \text{Spread Paid on Fill} + \text{Reject Ratio} × \text{Reject Cost}
+++++
+
+
+Definitions below:
+
+* `Spread Paid` on Fills is just a Spread Paid in definitions conditional on the trade being filled
+* `Reject Ratio` is the ratio of Reject volume to fill volume
+* `Reject Cost` is the move in the mid-price over the next 500ms after the trade is rejected. It is assumed that the trade order will be re-tried 500ms after the reject report has been received. The 500ms number can be changed in Tradefeedr Platforms to accommodate exact use case/strategy of the end user.
+
+**Note** that in the definition above `RejectRatio` is not limited by 100% as `RejectVolume` can exceed the `FillVolume`.
+
+
+The metrics are as follows:
+
+* `VolumeShare` is the share of total fill volume (for example 41.29% for EURUSD below)
+* `NumberOfFills` is the count of filled trades
+* `NumberOfRejects` is the count of rejected trades
+* `FillVolume` is expressed in million USD
+* `RejectVolume` is expressed in million USD
+* `AvgTradeSizeUSD` is the average size of filled trades
+* `SpreadPaid` is expressed in $/m. Trade-weighted average Spread PnL over all filled trades
+* `RejectCost` is expressed in $/m.  Trade-weighted average move in mid-price post rejection event over specific time period (specified by you)
+* `RejectToFill` is the ratio of RejectVolume to FillVolume
+* `RejectCostsUSD` is `RejectVolume * RejectCost`. It is expressed in USD rather than millions of USD
+
+The below figure shows how the flow metrics are summarised in a standard table from the Tradefeedr API.
+
+==== Results
+---
+image::api_rfs/summary_stats/api_rfs_summary_stats_ex2.png["api_rfs_summary_stats_ex2.png"]

@@ -1,0 +1,290 @@
+= PnL History
+
+== Introduction
+
+The `v1/fx/algo/pnl-history` endpoint should be used to understand the dynamics of the tick-by-tick algo PnL.
+The PnL is split into AlgoVendor (Bank) PnL and algo user. The algo user can quantify the results of their actions such as setting algo limit price.  
+
+Returns a table describing tick by tick decomposition of `SlippageToArrivalMid` into Slippage due to Bank (Algo Provider) and Slippage due to algo User (for a specific `ParentOrderID` supplied by a user).  
+
+     
+== API Specification
+The API endpoint requires a JSON object representing query logic similar to SQL and containing the following fields:
+
+- `filter`  - how the underlying data should be filtered
+
+**Note:** `ParentOrderID` is the only valid filter field for this endpoint
+
+== Example 
+**Note**: For display purposes we have limited the number of rows to 5 and and columns to 10.
+
+=== PnL History for a ParentOrderID
+---
+
+This query returns an algo which does not contain a `LimitPrice`. Meaning that the algo is always active during the execution period.
+Thus, there will not be any PnL attributed to the user.
+
+====
+[source,python]
+----
+include::example$api_algo/pnl_history/api_algo_pnl_history.py[]
+----
+====
+
+==== Results
+---
+image::api_algo/pnl_history/api_algo_pnl_history_ex1.png["api_algo_pnl_history_ex1.png"]
+
+==== Figures
+---
+Below figures illustrate the tick-by-tick algo PnL dynamics of an always active algo.
+An algo which is constantly executing and assigns no user PnL.
+
+
+====
+[source,python]
+----
+include::example$api_algo/pnl_history/api_algo_pnl_history_ex1_fig.py[]
+----
+====
+
+++++
+<div id='chart1'></div>
+<script>
+	d3.csv("../_attachments/api_algo/pnl_history/raw/api_algo_pnl_history_ex1.csv").then((data) => {
+	
+
+		var trace1 = [{
+				x: data.map((column) => column.Time),
+				y: data.map((column) => column.SlippageToArrivalMidPMUser),
+				type: 'line',
+				name: 'User'
+		}]
+		
+
+		var trace2 = [{
+				x: data.map((column) => column.Time),
+				y: data.map((column) => column.SlippageToArrivalMidPMBank),
+				type: 'line',
+				name: 'Bank'
+		}]
+		var char_data = trace1.concat(trace2); 
+		
+		var layout = {
+					title: 'PnL Dynamics of an Algo with a LimitPrice',
+					showlegend: true,
+					width: 750,
+					height: 500,
+                    xaxis: {
+                        title: {
+                          text: 'Time'
+                          }
+                        },
+                  
+                  yaxis: {
+                    title: {
+                      text: 'SlippageToArrivalMid'
+                      }
+                    }
+                                
+					};
+
+
+		var output_div = document.getElementById('chart1')
+		Plotly.newPlot(output_div, char_data, layout, { margin: { t: 0 } },{displayModeBar: false})
+		
+	})
+	
+</script>
+++++
+
+
+++++
+<div id='chart2'></div>
+<script>
+	d3.csv("../_attachments/api_algo/pnl_history/raw/api_algo_pnl_history_ex1.csv").then((data) => {
+	
+
+		var trace1 = [{
+				x: data.map((column) => column.Time),
+				y: data.map((column) => column.Mid),
+				type: 'line',
+				name: 'Mid'
+		}]
+		
+
+		var trace2 = [{
+				x: data.map((column) => column.Time),
+				y: data.map((column) => column.LimitPrice),
+				type: 'line',
+				name: 'LimitPrice'
+		}]
+		var char_data = trace1.concat(trace2); 
+		
+		var layout = {
+					title: 'Market data and LimitPrice Chart',
+					showlegend: true,
+					width: 750,
+					height: 500,
+                    xaxis: {
+                        title: {
+                          text: 'Time'
+                          }
+                        },
+                   
+                  yaxis: {
+                    title: {
+                      text: 'Price'
+                      }
+                    }                    
+					};
+
+
+		var output_div = document.getElementById('chart2')
+		Plotly.newPlot(output_div, char_data, layout, { margin: { t: 0 } },{displayModeBar: false})
+		
+	})
+	
+</script>
+++++
+
+
+=== PnL History when LimitPrice is present
+---
+
+In this example we show how the PnL dynamics change when a `LimitPrice` is instructed by a user.
+Now there is a user PnL in this case as the algo is following user instructions which determines if the algo is active or not.
+
+====
+[source,python]
+----
+include::example$api_algo/pnl_history/api_algo_pnl_history_ex2.py[]
+----
+====
+
+==== Results
+---
+image::api_algo/pnl_history/api_algo_pnl_history_ex2.png["api_algo_pnl_history_ex2.png"]
+
+==== Figures
+---
+Below figures illustrate the tick-by-tick algo PnL dynamics of an always active algo.
+An algo which is constantly executing and assigns no user PnL.
+
+
+====
+[source,python]
+----
+include::example$api_algo/pnl_history/api_algo_pnl_history_ex2_fig.py[]
+----
+====
+
+++++
+<div id='chart3'></div>
+<script>
+	d3.csv("../_attachments/api_algo/pnl_history/raw/api_algo_pnl_history_ex2.csv").then((data) => {
+	
+
+		var trace1 = [{
+				x: data.map((column) => column.Time),
+				y: data.map((column) => column.SlippageToArrivalMidPMUser),
+				type: 'line',
+				name: 'User'
+		}]
+		
+
+		var trace2 = [{
+				x: data.map((column) => column.Time),
+				y: data.map((column) => column.SlippageToArrivalMidPMBank),
+				type: 'line',
+				name: 'Bank'
+		}]
+		var char_data = trace1.concat(trace2); 
+		
+		var layout = {
+					title: 'PnL Dynamics of an Active Algo',
+					showlegend: true,
+					width: 750,
+					height: 500,
+                    xaxis: {
+                        title: {
+                          text: 'Time'
+                          }
+                        },
+                  
+                  yaxis: {
+                    title: {
+                      text: 'SlippageToArrivalMid'
+                      }
+                    }                    
+					};
+
+
+		var output_div = document.getElementById('chart3')
+		Plotly.newPlot(output_div, char_data, layout, { margin: { t: 0 } },{displayModeBar: false})
+		
+	})
+	
+</script>
+++++
+
+
+++++
+<div id='chart4'></div>
+<script>
+	d3.csv("../_attachments/api_algo/pnl_history/raw/api_algo_pnl_history_ex2.csv").then((data) => {
+	
+
+		var trace1 = [{
+				x: data.map((column) => column.Time),
+				y: data.map((column) => column.Mid),
+				type: 'line',
+				name: 'Mid'
+		}]
+		
+
+		var trace2 = [{
+				x: data.map((column) => column.Time),
+				y: data.map((column) => column.LimitPrice),
+				type: 'line',
+				name: 'LimitPrice'
+		}]
+		var char_data = trace1.concat(trace2); 
+		
+		var layout = {
+					title: 'Market data and LimitPrice Chart',
+					showlegend: true,
+					width: 750,
+					height: 500,
+                    xaxis: {
+                        title: {
+                          text: 'Time'
+                          }
+                        },
+                   
+                    yaxis: {
+                     title: {
+                      text: 'Price'
+                      }
+                    }                                  
+					};
+
+
+		var output_div = document.getElementById('chart4')
+		Plotly.newPlot(output_div, char_data, layout, { margin: { t: 0 } },{displayModeBar: false})
+		
+	})
+	
+</script>
+++++
+
+
+
+== Field Definitions
+---
+
+
+[%header,format=csv]
+|===
+include::example$api_algo/pnl_history/field-definitions_pnl_history.csv[]
+|===

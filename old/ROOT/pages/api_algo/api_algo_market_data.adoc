@@ -1,0 +1,111 @@
+= Market Data
+
+== Introduction
+The `v1/fx/algo/market-data` endpoint returns all relevant market data around an algo run - specified by `ParentOrderID`. 
+
+* If for a single cross, only market data for one cross will be returned
+* If multiple crosses - will also be returned and identified by `Symbol` column 
+
+== API Specification
+The API endpoint requires a JSON object representing query logic similar to SQL and containing the following fields:
+
+- `filter`  - how the underlying data should be filtered
+
+**Note:** `ParentOrderID` is the only valid filter field for this endpoint
+
+== Example 
+**Note**: For display purposes we have limited the number of rows to 5 and and columns to 10.
+
+=== Market Data for a `ParentOrderID`
+---
+
+====
+[source,python]
+----
+include::example$api_algo/market_data/api_algo_market_data.py[]
+----
+====
+
+==== Results
+---
+image::api_algo/market_data/api_algo_market_data_ex1.png["api_algo_market_data_ex1.png",250,100]
+
+
+==== Figure
+---
+
+====
+[source,python]
+----
+include::example$api_algo/market_data/api_algo_market_data_ex1_fig.py[]
+----
+====
+
+
+
+++++
+<div id='chart1'></div>
+<script>
+	d3.csv("../_attachments/api_algo/market_data/raw/api_algo_market_data_ex1.csv").then((data) => {
+	
+		var trace1 = [{
+				x: data.map((column) => column.Time),
+				y: data.map((column) => column.Mid),
+				type: 'line',
+				name: 'Mid'
+		}]
+		
+
+		var char_data = trace1; 
+		
+		var layout = {
+					title: 'Market Data and Execution Data For POID: 20180921-A07 ',
+					showlegend: true,
+					width: 750,
+					height: 500,
+                    xaxis: {
+                        title: {
+                          text: 'Time'
+                          }
+                        },
+                   
+                  yaxis: {
+                    title: {
+                      text: 'Price'
+                      }
+                    }
+                                
+					};
+
+
+		var output_div = document.getElementById('chart1')
+		Plotly.newPlot(output_div, char_data, layout, { margin: { t: 0 } },{displayModeBar: false})
+    
+	d3.csv("../_attachments/api_algo/market_data/raw/api_algo_market_data_ex2.csv").then((ex_data) => {
+	
+		var trace2 = [{
+				x: ex_data.map((column) => column.ArrivalTime),
+				y: ex_data.map((column) => column.Price),
+				type: 'lines',
+                mode:'markers',
+				name: 'Execution Price'
+		}]
+		
+		var output_div = document.getElementById('chart1')        
+Plotly.addTraces(output_div,trace2)        
+  
+		
+	
+	
+      })
+       })   
+</script>  
+++++
+
+== Field Definitions
+
+[%header,format=csv]
+|===
+include::example$api_algo/market_data/field-definitions_market_data.csv[]
+
+|===

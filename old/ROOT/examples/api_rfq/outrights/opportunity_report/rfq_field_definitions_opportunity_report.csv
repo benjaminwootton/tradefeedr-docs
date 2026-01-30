@@ -1,0 +1,14 @@
+Name,Description
+LP,Executing LP - counterparty to the trade.
+OutCome,If the trade was WON or LOST.
+Symbol,Currency pair. For example EURUSD.
+Side,"Trade side. ""B” for buy and ""S” for sell."
+TradeQuantity,Traded quantity expressed in TradeCurrency
+TradeCcy,"Denomination Currency for TradeQuantity and OrderQuantity. For example
+    EUR."
+TradeTime,TradeTime - Time (GMT) when the trade was filled
+AllInRate,Price quoted for the trade
+PriceShown,Price the trade traded at
+ProductType,Type of product traded. For example SPOT
+MissedByPIPS,The difference between the AllInRate and the PriceShown expressed in pips
+MissedByUSDPM,The difference between the AllInRate and the PriceShown expressed in USD per Mil

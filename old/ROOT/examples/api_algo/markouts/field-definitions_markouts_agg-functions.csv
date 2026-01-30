@@ -1,0 +1,10 @@
+Name,Description
+,sum
+,average
+,standard deviation
+,maximum
+,minimum
+,count
+,first observation
+,last observation
+,returns the x percentile of the specified column

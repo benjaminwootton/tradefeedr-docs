@@ -1,0 +1,17 @@
+= FAQs
+
+This page contains frequently asked questions.
+
+== 1. How to obtain stack information for a single trade? 
+
+====
+[source,python]
+----
+include::example$faqs/faqs_q1.py[]
+----
+====
+
+=== Results
+---
+image::faqs/faqs_ex1.png["faqs_ex1.png"]
+

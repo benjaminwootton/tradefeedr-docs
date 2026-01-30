@@ -1,0 +1,95 @@
+= Outrights Execution History
+
+== Introduction
+The `v1/fx/rfq-outrights/execution-history` endpoint is used to query all trading events for outrights RFQ . It should be used when you require a detailed analysis and understanding of the execution. 
+The endpoint allows selection of multiple metrics (fields) such as `BestBid`, `BestAsk`, `NumLPs` etc. 
+
+== API Specification
+
+The API endpoint requires a JSON object representing query logic similar to SQL and containing the following fields:
+
+* `select`  - which fields should be returned in the end result. For example `BestBid`
+* `filter`  - how the underlying data should be filtered
+
+== Example 
+**Note**: For display purposes we have limited the number of rows to 5 and and columns to 10.
+
+=== Select Metrics (Fields) for a Date Range
+---
+
+====
+[source,python]
+----
+include::example$api_rfq/outrights/execution_history/api_rfq_outrights_execution_history.py[]
+----
+====
+
+==== Results
+---
+image::api_rfq/outrights/execution_history/api_rfq_outrights_execution_history_ex1.png["api_rfq_outrights_execution_history_ex1.png"]
+
+==== Figure
+---
+
+====
+[source,python]
+----
+include::example$api_rfq/outrights/execution_history/api_rfq_outrights_execution_history_ex1_fig.py[]
+----
+====
+
+
+
+++++
+<div id='chart1'></div>
+<script>
+	d3.csv("../_attachments/api_rfq/outrights/execution_history/raw/api_rfq_outrights_execution_history_ex1.csv").then((data) => {
+
+		var trace1 = [{
+				x: data.map((row) => row.Date),
+				y: data.map((row) => row.TradeQuantity),
+				type: 'lines',
+				name: 'TradeQuantity',
+                transforms: [{
+                type: 'aggregate',
+                groups: data.map((row) => row.Date),
+                aggregations: [
+                {target: 'y', func: 'sum', enabled: true},
+                ]
+                }]
+		}]
+		
+        
+		var char_data = trace1; 
+		
+		var layout = {
+					title: 'TradeQuantity by Date and Symbol',
+					showlegend: true,
+					width: 750,
+					height: 500,
+                    xaxis: {
+                        title: {
+                          text: 'Date'
+                          }
+                        },
+                   
+                  yaxis: {
+                    title: {
+                      text: 'TradeQuantity'
+                      }
+                    }                        
+					};                     
+
+
+		var output_div = document.getElementById('chart1')
+		Plotly.newPlot(output_div, char_data, layout, { margin: { t: 0 } },{displayModeBar: false})
+	})
+</script>
+++++
+
+== Field Definitions
+
+[%header,format=csv, cols=["60%", "40%"]]
+|===
+include::example$api_rfq/outrights/execution_history/rfq_field_definitions_execution_history.csv[]
+|===

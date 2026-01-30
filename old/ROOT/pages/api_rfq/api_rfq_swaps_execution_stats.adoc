@@ -1,0 +1,127 @@
+= Swaps Execution Stats
+
+== Introduction
+The `v1/fx/rfq-swaps/execution-stats` can be used to query across the entire execution history. The query returns a table with the metrics (fields) selected by you as columns. The rows are defined by `groupby` statements. 
+You can review the swaps RFQs on a trade by trade level or an aggregated one by using the `groupby` query. 
+This endpoint also displays the `NumLPs` that where in the stack at the time the swaps RFQ was requested.
+
+The endpoint is designed to study general execution quality of the swaps RFQ trades. 
+
+== API Specification
+
+The API endpoint requires a JSON object representing query logic similar to SQL and containing the following fields:
+
+* `groupby` - which fields the results will be aggregated by
+* `select`  - which fields should be returned in the end result. For example `NearPrice`
+* `filter`  - how the underlying data should be filtered
+
+== Example 
+**Note**: For display purposes we have limited the number of rows to 5 and and columns to 10.
+
+=== `TradeID` present in `groupby`
+---
+
+Applying a `groupby` with the field including a unique identifier results in no aggregation taking place, as the `groupby` field is unique to every row.
+
+**Note:** This endpoint does not have any default aggregation logic you must define the aggregation functions. 
+
+Please refer to xref:api_rfq/api_rfq_outrights_execution_stats.adoc[v1/fx/rfq-outrights/execution-stats] to see more examples.
+
+====
+[source,python]
+----
+include::example$api_rfq/swaps/execution_stats/api_rfq_swaps_execution_stats.py[]
+----
+====
+
+==== Results
+---
+image::api_rfq/swaps/execution_stats/api_rfq_swaps_execution_stats_ex1.png["api_rfq_swaps_execution_stats_ex1.png"]
+
+==== Figure
+---
+
+====
+[source,python]
+----
+include::example$api_rfq/swaps/execution_stats/api_rfq_swaps_execution_stats_ex1_fig.py[]
+----
+====
+
+++++
+<div id='chart1'></div>
+<script>
+	d3.csv("../_attachments/api_rfq/swaps/execution_stats/raw/api_rfq_swaps_execution_stats_ex1.csv").then((data) => {
+    
+		var trace1 = [{
+				x: data.map((row) => row.LP),
+				y: data.map((row) => row.NearTradeQuantity),
+				type: 'bar',
+				name: 'NearTradeQuantity',
+                transforms: [{
+                type: 'aggregate',
+                groups: data.map((row) => row.LP),
+                aggregations: [
+                {target: 'y', func: 'sum', enabled: true},
+                ],
+                }],
+                transforms: [{
+                type: 'sort',
+                target: 'y',
+                order: 'descending'
+                }]
+		}]
+		
+        
+
+		var char_data = trace1; 
+		
+		var layout = {
+					title: 'Swaps RFQ NearTradeQuantity by LP',
+					showlegend: true,
+					width: 750,
+					height: 500,
+                    xaxis: {
+                        title: {
+                          text: 'LP'
+                          }
+                        },
+                   
+                  yaxis: {
+                    title: {
+                      text: 'NearTradeQuantity'
+                      }
+                    }                          
+					};
+
+
+		var output_div = document.getElementById('chart1')
+		Plotly.newPlot(output_div, char_data, layout, { margin: { t: 0 } },{displayModeBar: false})
+	})
+</script>
+++++
+
+Refer to xref:api_rfq/api_rfq_outrights_execution_stats.adoc[v1/fx/rfq-outrights/execution-stats] for more examples on how to use the endpoint.
+
+== Field Definitions
+
+[%header,format=csv, cols=["60%", "40%"]]
+|===
+include::example$api_rfq/swaps/execution_history/rfq_field_definitions_execution_history.csv[]
+|===
+
+=== Aggreggation Functions (for `select` if `groupby` is present)
+---
+
+[%header,format=csv, cols=["60%", "40%"]]
+|===
+include::example$api_rfq/outrights/execution_stats/rfq_field_definitions_agg_functions.csv[]
+|===
+
+=== Modification Functions (for `filter` and `groupby` )
+---
+
+[%header,format=csv, cols=["60%", "40%"]]
+|===
+include::example$api_rfq/outrights/execution_stats/rfq_field_definitions_modif_functions.csv[]
+|===

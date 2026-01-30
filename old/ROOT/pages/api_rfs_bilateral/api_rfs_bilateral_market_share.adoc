@@ -1,0 +1,343 @@
+= Bilateral Market Share
+
+== Introduction
+
+The `v1_fx_rfs_bilateral-market-share` endpoint is designed to study the evolution of the `MarketShare` over a period of days. You can apply a `filter` to the underlying data on the fields outlined at the end of this notebook.
+For example, you can see how their `MarketShare` varied over the last year for a specific `LP` and selected `Symbol`/s.
+The data is anonymized by masking the `LP` names. 
+
+Endpoint allows you to query `MarketShare` history by `Date`.
+
+Refer to xref:analytics_bilateral_sharing.adoc[Bilateral Sharing] page for details on how bilateral sharing works.
+
+
+== API Specification
+
+The API endpoint requires a JSON object representing query logic similar to SQL and containing the following fields:
+
+* `select`  - which fields should be returned in the end result. For example `Date` or `MarketShare`.  
+* `filter`  - how the underlying data should be filtered
+
+
+== Example 
+**Note**: For display purposes we have limited the number of rows to 5 and and columns to 10.
+
+
+=== Default Results
+---
+When no options are passed the endpoint returns your `MarketShare` by `Date`.
+The result set also contains columns `CreatedBy` (you) and `CreatedFor` ( client the view was created for).
+For example if `CreatedFor` is LP1, LP1 results are unmaksed and all other names are masked.
+
+====
+[source,python]
+----
+include::example$api_rfs_bilateral/market_share/api_rfs_bilateral_market_share.py[]
+----
+====
+
+==== Results
+---
+image::api_rfs_bilateral/market_share/api_rfs_bilateral_market_share_ex1.png["api_rfs_bilateral_market_share_ex1.png"]
+
+==== Figure
+---
+
+====
+[source,python]
+----
+include::example$api_rfs_bilateral/market_share/api_rfs_bilateral_market_share_ex1_fig.py[]
+----
+====
+++++
+<div id='chart1'></div>
+<script>
+	d3.csv("../_attachments/api_rfs_bilateral/market_share/raw/api_rfs_bilateral_market_share_ex1.csv").then((data) => {
+   		var selected = 'LP1masked';
+		const res = data.filter(({
+		  LP
+		}) => selected.includes(LP));
+        
+		var trace1 = [{
+				x: res.map((row) => row.Date),
+				y: res.map((row) => row.MarketShare),
+				name: 'MarketShare'
+		}]
+		
+
+		var char_data = trace1; 
+		
+		var layout = {
+					title: 'LP1masked MarketShare Plot',
+					showlegend: true,
+					width: 750,
+					height: 500,
+                    xaxis: {
+                        title: {
+                          text: 'Date'
+                          }
+                        },
+                   
+                  yaxis: {
+                    title: {
+                      text: 'MarketShare'
+                      }
+                    }                        
+					};
+
+
+		var output_div = document.getElementById('chart1')
+		Plotly.newPlot(output_div, char_data, layout, { margin: { t: 0 } },{displayModeBar: false})
+	})
+</script>
+++++
+
+=== LP Market Share Analysis 1
+---
+This example shows you how to apply the `filter` parameter to obtain the masked results.
+We apply a filter on the `CreatedFor` column to create a view for a single `LP`.
+
+Results are only meaningful if one `CreatedFor` variable is selected, as shown below.
+
+**Note**: In the demo data `CreatedFor` is an empty string. Change the parameter in the code cell below when using actual data.
+
+====
+[source,python]
+----
+include::example$api_rfs_bilateral/market_share/api_rfs_bilateral_market_share_ex2.py[]
+----
+====
+
+==== Results
+---
+image::api_rfs_bilateral/market_share/api_rfs_bilateral_market_share_ex2.png["api_rfs_bilateral_market_share_ex2.png"]
+
+==== Figure
+---
+
+====
+[source,python]
+----
+include::example$api_rfs_bilateral/market_share/api_rfs_bilateral_market_share_ex2_fig.py[]
+----
+====
+++++
+<div id='chart2'></div>
+<script>
+	d3.csv("../_attachments/api_rfs_bilateral/market_share/raw/api_rfs_bilateral_market_share_ex2.csv").then((data) => {
+    
+var selected = 'LP1masked';
+		const data_lp1 = data.filter(({
+		  LP
+		}) => selected.includes(LP));    
+		var trace1 = [{
+				x: data_lp1.map((row) => row.Date),
+				y: data_lp1.map((row) => row.MarketShare),
+                mode: 'lines',
+				type: 'lines',
+				name: 'LP1masked'
+		}]
+		
+        
+var selected = 'LP2masked';
+		const data_lp2 = data.filter(({
+		  LP
+		}) => selected.includes(LP));    
+        
+		var trace2 = [{
+				x: data_lp2.map((row) => row.Date),
+				y: data_lp2.map((row) => row.MarketShare),
+                mode: 'lines',
+				type: 'lines',
+				name: 'LP2masked'
+		}]        
+        
+var selected = 'LP3masked';
+		const data_lp3 = data.filter(({
+		  LP
+		}) => selected.includes(LP));    
+        
+		var trace3 = [{
+				x: data_lp3.map((row) => row.Date),
+				y: data_lp3.map((row) => row.MarketShare),
+                mode: 'lines',
+				type: 'lines',
+				name: 'LP3masked'
+		}]       
+        
+var selected = 'LP4masked';
+		const data_lp4 = data.filter(({
+		  LP
+		}) => selected.includes(LP));    
+        
+		var trace4 = [{
+				x: data_lp4.map((row) => row.Date),
+				y: data_lp4.map((row) => row.MarketShare),
+                mode: 'lines',
+				type: 'lines',
+				name: 'LP4masked'
+		}]     
+
+        
+var selected = 'LP5masked';
+		const data_lp5 = data.filter(({
+		  LP
+		}) => selected.includes(LP));    
+        
+		var trace5 = [{
+				x: data_lp5.map((row) => row.Date),
+				y: data_lp5.map((row) => row.MarketShare),
+                mode: 'lines',
+				type: 'lines',
+				name: 'LP5masked'
+		}]     
+        
+        
+var selected = 'LP6masked';
+		const data_lp6 = data.filter(({
+		  LP
+		}) => selected.includes(LP));    
+        
+		var trace6 = [{
+				x: data_lp6.map((row) => row.Date),
+				y: data_lp6.map((row) => row.MarketShare),
+                mode: 'lines',
+				type: 'lines',
+				name: 'LP6masked'
+		}]     
+
+
+var selected = 'TRADEFEEDR';
+		const data_tfr = data.filter(({
+		  LP
+		}) => selected.includes(LP));    
+        
+		var trace7 = [{
+				x: data_tfr.map((row) => row.Date),
+				y: data_tfr.map((row) => row.MarketShare),
+                mode: 'lines',
+				type: 'lines',
+				name: 'TRADEFEEDR'
+		}]     
+
+
+		var char_data = trace1.concat(trace2,trace3,trace4, trace5, trace6, trace7); 
+		
+		var layout = {
+					title: 'LP Market Share Analysis 1',
+					showlegend: true,
+					width: 750,
+					height: 500,
+                    xaxis: {
+                        title: {
+                          text: 'Date'
+                          }
+                        },
+                   
+                  yaxis: {
+                    title: {
+                      text: 'MarketShare'
+                      }
+                    }                        
+					};
+
+
+		var output_div = document.getElementById('chart2')
+		Plotly.newPlot(output_div, char_data, layout, { margin: { t: 0 } },{displayModeBar: false})
+	})
+</script>
+++++
+
+
+=== LP Market Share Analysis 2
+---
+
+This example shows you how to apply the `filter` parameter to highlight the market share of selected names.
+
+**Note ** : The use of `TRADEFEEDR` is for demo purposes only, this will differ when demo data is turned off. The user will need to change this to thier own `LP` name.
+
+====
+[source,python]
+----
+include::example$api_rfs_bilateral/market_share/api_rfs_bilateral_market_share_ex3.py[]
+----
+====
+
+==== Results
+---
+image::api_rfs_bilateral/market_share/api_rfs_bilateral_market_share_ex3.png["api_rfs_bilateral_market_share_ex3.png"]
+
+==== Figure
+---
+====
+[source,python]
+----
+include::example$api_rfs_bilateral/market_share/api_rfs_bilateral_market_share_ex3_fig.py[]
+----
+====
+++++
+<div id='chart3'></div>
+<script>
+	d3.csv("../_attachments/api_rfs_bilateral/market_share/raw/api_rfs_bilateral_market_share_ex3.csv").then((data) => {
+    
+var selected = 'LP1masked';
+		const data_lp1 = data.filter(({
+		  LP
+		}) => selected.includes(LP));    
+		var trace1 = [{
+				x: data_lp1.map((row) => row.Date),
+				y: data_lp1.map((row) => row.MarketShare),
+                mode: 'lines',
+				type: 'lines',
+				name: 'LP1masked'
+		}]
+		
+        
+var selected = 'TRADEFEEDR';
+		const data_tfr = data.filter(({
+		  LP
+		}) => selected.includes(LP));    
+        
+		var trace2 = [{
+				x: data_tfr.map((row) => row.Date),
+				y: data_tfr.map((row) => row.MarketShare),
+                mode: 'lines',
+				type: 'lines',
+				name: 'TRADEFEEDR'
+		}]     
+
+
+		var char_data = trace1.concat(trace2); 
+		
+		var layout = {
+					title: 'LP Market Share Analysis 2',
+					showlegend: true,
+					width: 750,
+					height: 500,
+                    xaxis: {
+                        title: {
+                          text: 'Date'
+                          }
+                        },
+                   
+                  yaxis: {
+                    title: {
+                      text: 'MarketShare'
+                      }
+                    }                        
+					};                    
+
+
+		var output_div = document.getElementById('chart3')
+		Plotly.newPlot(output_div, char_data, layout, { margin: { t: 0 } },{displayModeBar: false})
+	})
+</script>
+++++
+
+
+== Field Definitions
+
+[%header,format=csv]
+|===
+include::example$api_rfs_bilateral/market_share/rfs_bilateral_field_definitions_market_share.csv[]
+|===
