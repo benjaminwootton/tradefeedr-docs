@@ -1,0 +1,31 @@
+# RFS Bilateral API
+
+## APIs Summary 
+
+The set of Tradefeedr RFS Bilateral APIs allow Liquidity Providers to access aggregated flow information shared by its clients. 
+The set of APIs provide Liquidity Providers and Liquidity Consumers the opportunity  to engage in data driven dialogue discussing flow metrics and optimizing liquidity provision together.
+The data has been anonymized to mask the LP names.
+
+Refer to  [RFS Bilateral Sharing Analytics](../analytics/bilateral-sharing.md) page for field definitions.
+
+The set of RFS Bilateral API endpoints:
+
+1. [Bilateral Aggregates - v1_fx_rfs_bilateral-aggregates](api-rfs-bilateral/api-rfs-bilateral-aggregates.md)
+  - This endpoint is designed to study general execution quality of the trades and their associated market impact
+
+2. [Bilateral Markouts - v1_fx_rfs_bilateral-markouts](api-rfs-bilateral/api-rfs-bilateral-markouts.md)
+  - This endpoint is used to study the markout curves
+
+3. [Bilateral Market Share - v1_fx_rfs_bilateral-market-share](api-rfs-bilateral/api-rfs-bilateral-market-share.md)
+  - This endpoint is used to query market share history by date
+
+## API Default Aggregation 
+
+For convenience and speed of use Tradefeedr API allows to specify column name **without** having to specify aggregation function in an API call. In this case default aggregation function is selected automatically depending on the column name. This ensures sensible default behaviour. The logic is as follows:
+
+- USD denominated variables like `TradeQuantityUSD` can be aggregated across regardless the group by operator. They can aggregated as `sum`.
+
+- Dimension-less variable like `*PM` (per-million measures). They are aggregated as weighted average using `TradeQuantityUSD` as weights
+
+- Symbolic variables (like `LP`  or `Symbol`) do not have sensible default aggregation. For example, it is not clear how to aggregate strings like "EURUSD" and "USDJPY".
+Therefore, by default if you select `LP` in `groupby` and `Symbol` as column then `None` is returned.

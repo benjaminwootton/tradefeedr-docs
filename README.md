@@ -1,63 +1,55 @@
----
-description: Welcome to the documentation site for the Tradefeedr Platform and APIs.
-metaLinks:
-  alternates:
-    - https://app.gitbook.com/s/HH7mE9Gn8xITJMgN16PA/
----
+# Overview
 
-# Tradefeedr Overview
+Welcome to the documentation site for the Tradefeedr Platform and APIs.
 
-### What Tradefeedr does
+## Tradefeedr Role
 
-Tradefeedr provides clients with easy access to their trading data.
+The goal of Tradefeedr is to provide clients with easy access to their trading data.
 
-Tradefeedr’s feature-rich data APIs let you build analyses and workflows that fit your needs. Optimised API calls make it easy to “slice and dice” data—extracting specific views for visualisation in data-science notebooks, or downloading data for use in internal systems for further analysis.
+Tradefeedr’s functionally rich data APIs allows you to build analysis and workflows that fit your needs.
+Tradefeedr provides optimised API calls that allow you to "slice and dice" data and extract specific views for visualisation in Data Science Notebooks or download the data for use in internal systems for further analysis.
 
-### Start here
+## Getting Started
 
-{% hint style="info" %}
-If you’re new to Tradefeedr, start with **Getting Started**.
-{% endhint %}
+The [Getting Started](getting-started.md) tutorial provides you a quick start guide on how to run the Tradefeedr APIs. It contains information on API structure, the endpoint (can be seen as a function) and how to run a custom query.
 
-* [Getting Started](https://app.gitbook.com/s/HH7mE9Gn8xITJMgN16PA/who-are-we): a quick-start tutorial that explains API structure, endpoints (think of these as functions), and how to run a custom query.
+Note that the structure of the JSON query is dependent upon the API endpoint and what parameters it can handle.
 
-{% hint style="warning" %}
-The structure of each JSON query depends on the endpoint and the parameters it supports.
-{% endhint %}
+This page contains simple examples of the APIs and it is broken down into the following groups:
 
-### API groups
+- Algo API
+- RFS API
+- Bilateral RFS API
+- RFQ API
 
-The examples in this documentation are organised into the following API groups:
+The Python code used to generate the result is presented with each example. It can be copied and run directly on the platform to generate the same results.
 
-* **Algo API**
-* **RFS API**
-* **Bilateral RFS API**
-* **RFQ API**
+## User Guide
 
-Where relevant, we show the Python code used to generate each result so you can copy and run it directly on the platform.
+The [User Guide](user-guide.md) contains an overview of the different user guides found on this site.
 
-### User Guide
+This page is used to help navigate you to the documentation you seek.
 
-The [User Guide](https://docs.analytics.tradefeedr.com/docs/user_guide.html) provides an overview of the user guides available across the documentation.
+##  Analytics
 
-Use it when you know what you’re looking for and want to navigate directly to the right guide.
+The [Analytics](analytics.md) pages contains information on the various metrics, providing you an comprehensive understanding of the APIs.
+Thus, enabling you to carry out your analysis using the Tradefeedr endpoints. Furthermore, we have included
+thorough description of the Tradefeedr models that are being used.
 
-### Analytics
+Also, refer to the [User Guide](user-guide.md) for analytics guides.
 
-The [Analytics](https://docs.analytics.tradefeedr.com/docs/analytics.html) pages describe the available metrics and models, helping you build a comprehensive understanding of the APIs and how to interpret their output.
+## API
 
-For analytics walkthroughs, also refer to the [User Guide](https://docs.analytics.tradefeedr.com/docs/user_guide.html).
+The [API](api.md) page provides you a remote access guide, running the APIs away from the Tradefeedr Platform.
+Also, a breakdown of API structure and it's components.
 
-### API (remote access)
+For API endpoint guides refer to the [User Guide](user-guide.md).
 
-The [API](https://docs.analytics.tradefeedr.com/docs/api.html) page explains how to run the APIs remotely (outside the Tradefeedr platform), and provides an overview of API structure and its components.
+## Platform User Guide
 
-For endpoint-specific guides, refer to the [User Guide](https://docs.analytics.tradefeedr.com/docs/user_guide.html).
+This guide explains how the Tradefeedr platform works and all the various layers it contains.
 
-### Platform guide
+It is useful to understand how the API, widget and template report notebooks are constructed.
+As it would provide you the ability customise/modify the notebooks to their own needs.
 
-This guide explains how the Tradefeedr platform works and the layers it contains.
-
-It is useful for understanding how the API, widgets, and template report notebooks are constructed, so you can customise or modify notebooks for your own needs.
-
-* [Platform Guide](https://docs.analytics.tradefeedr.com/docs/platform.html)
+- [Platform Guide](platform.md)

@@ -1,0 +1,81 @@
+# Risk Transfer Benchmarks
+
+Algo performance is measured against certain benchmarks. This includes `ArrivalMidPrice` or `TWAPMidPrice` which are purely based on fair market price during algo start or during algo execution (respectively).
+
+However, these benchmarks do not adjust for market conditions during the execution time, volatility of the underlying traded asset or size of the order. It is much more impressive to execute 100 million USDZAR at mid+2bps than to achieve the same performance in 100m  EURUSD or USDCHN. This is because USDZAR is much more volatile and much less liquid than EURUSD. Moreover, even comparison across the same currency pair can be misleading. The EURUSD during Covid-driven sell-off of March 2020 does not have the same properties as EURUSD in quiet time period.
+
+Risk transfer benchmark attempts to create a approximation of fair price of immediate execution. It answers the question - if I have to execution the whole algo amount **immediately** what would be a fair spread I would have to cross.
+
+There are different approaches to estimate the risk transfer costs. They rank from purely model driven to purely empirical (i.e. record the results of several banks ). Tradefeedr takes a view that purely model driven approach is not appealing. Tradefeedr is not a trading
+company, does not have a live market feed and lacks the data to estimate this risk transfer reliably and consistency with the market.
+
+##  Model Specification
+
+Tradefeedr takes a **hybrid** approach. For each algo execution, Tradefeedr collects the risk transfer costs data from executing banks.  This results in large dataset of dates, times, symbols, amounts and corresponding risk transfers costs.
+(This is the empirical part).
+
+The data is valuable but not usable without an aggregating technique or a model. The Tradefeedr model assume that risk transfer costs are driven by several factors:
+
+- Daily volatility
+- Time of the day
+- Currency pair
+- Order Size
+
+This factor model is estimated via standard regression as per the equation below: +
+
+[latexmath]
+
+where latexmath:[log(DailyVolatility)] is the Tradefeedr volatility forecast for the execution data, and latexmath:[a(i) * h(i)] is the component responsive for intra-day pattern.
+
+The model has a good fit ratio for most active currencies latexmath:[R^2] in excess of 70%.
+
+Effectively, the factor model is simply an interpolation and extrapolation device. The factors are either easily observed  or are can be estimated at any moment in time.
+
+Therefore, risk transfer costs can be projected for any date, time, symbol and order size.
+
+## Volatility Estimation
+
+One of the main factors is volatility.
+
+High volatility naturally increase the transaction costs. Moreover, quick heuristics would be that the relationships is linear and almost one for on. Doubling the volatility doubles the transaction costs. This of course only holds for normal market.
+
+However, increases in volatility (during market breakdown) can increase costs more than linearly and small increases may not change the trading cost at all (price stickiness driven by the competitive pressures). Overall, volatility is definite one of the main factors.
+
+However, which volatility? Volatility is not observable. There are  several ways to calculate volatility factor ranging between those two alternatives:
+
+- Intra-day volatility which is used by Tradefeedr to measure the effective risk taken the algo
+- Daily volatility
+
+Daily volatility has to be combined with the time of the day factor to account for the differences in liquidity for different currency pairs.
+
+Intuitively, intraday volatility  is more appealing because it measures volatility precisely at the time of the execution (for example 1 Dec 2020 at 08:20:21).
+Although using intraday volatility has one important drawback, volatility is typically low not just when the markets are quiet but also during illiquid hours.
+
+For example, EURUSD is not very liquid in very early European time but looking at just volatility one may conclude that EURUSD risk transfer cost should be lower in Asia time than they should be in European time zero. This is not true.
+
+Hence, we use volatility daily level (which if high unambiguous suggests higher risk transfer costs) and use time of the day as a correction factor for liquidity conditions.
+
+## Limitations
+
+Tradefeedr risk transfer costs model is a simple model that is designed to be interpretable and **broadly** consistent with all the banks data.
+
+At the moment the model does not take into account the following factors:
+
+- Macro and calendar events. If for example, an algo is placed right before NFP announcement the risk transfer price will be high.
+- We do not explicitly model liquidity conditions. Volatility is a good factor but it is not enough. We do take liquidity conditions in currency pairs into account **implicitly** because we get risk transfer cost from bank.
+
+There is a plan to correct for those limitations in next versions.
+
+## Other supported Risk Transfer Benchmark
+
+All the benchmarks are available via [Algo API](algo/README.md)
+
+You have the ability to switch between the following Tradefeedr benchmarks:
+
+- **TradefeedrModel** - This is Tradefeedr risk transfer benchmark describe above
+
+- **BankReported** - This is the benchmark reported by the algo provider. This is only available for those providers who submit this data. `None` is reported for others.
+
+- **OwnRiskPriceStatic** - This can be provided by you (via uploading spread matrices) for your own internal use.
+
+- **OwnRiskPriceVolAdjusted** - This is  the **OwnRiskPriceStatic** adjusted by Tradefeedr using volatility factors (to make this spread matrix time varying).

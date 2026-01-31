@@ -1,0 +1,52 @@
+# Tradefeedr Mid Price
+
+## Tradefeedr Mid Price
+
+The purpose of Tradefeedr mid-price is to have common benchmark available for every trade and for every client using Tradefeedr APIs.
+Using a common benchmark has lots of benefits and allows for efficient data dialogue: Two counter-parties discussing the same trade will be
+looking at exactly the same set of statistics.
+
+Tradefeedr mid-price is generic, un-skewed mid which is constructed from multiple sources in the following way:
+
+- Tradefeedr connects (in LD4) to a number of banks constant quote stream.
+Those quotes are generated for Tradefeedr by member banks with a view that this is a "non-trading" stream and hence the prices are not skewed/adjusted for market marker positions.
+The quotes are provided in different sizes giving Tradefeedr ability to access liquidity conditions.
+
+- Tradefeedr aggregated those quotes into a "global order book". Bids and Asks are sorted in descending and ascending order respectively.
+
+- If the book is crossed, Tradefeedr uncrosses the book according to the logic presented below.
+Uncrossing should be consider as an effective filter which removes inaccurate and stale quotes.
+
+- As the goal of price consumption is to create a stable, fair price estimate rather than arbitrage trading, this book is further filtered for singular "spikes".
+The methodology is described below but broadly we remove short-lived jumps which are eventually reversed
+
+- Finally, the mid price is calculated as average of best bid and best ask. This mid is used internally to mark all events to market
+
+### Uncrossing Logic
+
+Uncrossing is required when the best bid is above the best offer. There can be more than two "offending" observations.
+We always have at least two, if the best bid is greater than best ask they are both wrong and removing one may fix the problem.
+
+It is tempting to use timestamp to filter out the "most stale" quotes.
+Therefore, if best bid and best ask cross, take out the one which is older and keep repeating it until nothing is crossed.
+However, using timestamp is not effective as new orders are often the ones which create the crossing in the first place.
+Due to feed/pricing errors, the removal of old orders from the stack could mean that we remove good, sensible prices.
+
+The approach taken by Tradefeedr is first to consider **potential** removal of **all** offending asks or of **all** offending bids.
+In both scenarios we look at how the uncrossed stack would look like and calculate effective bid/offer spread in each case.
+Then we proceed to removing the side which results the smallest (positive) bid/offer spread.
+This method allows to avoid situation where uncrossing lead of unbalanced stack where one side is removed or is far way (large spread).
+
+### Dynamic Time Series Filtering Logic
+
+The goal of the Dynamic Time Series Filtering is to have a reliable benchmark mid-price which is fairly conservative, we try to minimise spikes, especially those driven by micro-structure noise.
+
+We apply simply filtering mechanism which is parametrised to be applied infrequently (less than once a week per symbol).
+
+The logic is as follows:
+
+- Identify all spikes which are greater than `Y` basis points
+- Check if the spike reverts within the proximity of `Z` bps to the previous mid-price (before the spike) within `X` ticks.
+If this happens the spike is considered spurious and we consider the fair market mid-price to be the price before the spike.
+
+This filter is rarely applied as the data feeds are of high quality. They include build-in protections against singular price spikes.

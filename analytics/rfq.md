@@ -1,0 +1,52 @@
+# RFQ Analytics
+
+## Introduction
+
+RFQ is defined as a transaction that happens in several steps:
+
+1. Liquidity consumer (LC) identifies a set (henceforth referred to as **LP stack**) of Liquidity providers (LPs)
+2. LC send a request for quotes in a given size and currency pair/instrument. The quote request can be two-sided (asking for bid and offer) or one-sided
+3. LC waits for some time for the LPs to return with quotes
+4. LC selects the best quote according to some rules (in vast majority of cases it is simply highest bid or lowest offer depending on the side)
+
+RFQ data is typically submitted to the Tradefeedr by RFQ platforms so each transaction both winning LP quotes and losing LP quotes.
+
+## RFQ Specific Metrics -  Participation Report and Broker Reviews
+
+As RFQ is essentially a competitive auction the following metrics can be calculated.
+
+The metrics constitute to the `Participation Report` and can be produced using the `participation-report` set of APIs, for each LP and different data sub-division (such as per currency pair, order size, time of the day).
+
+### Hit Stats
+
+- `NumberOfParticipations` - number of RFQs LP participated in
+- `NumberOfWins` - is the number times specific LP is a winner (trade is booked against them)
+- `ActualWinRatio` - is `NumberOfWins / NumberOfParticipations`
+- `ExpectedWins` - is `NumberOfParticipations * ExpectedWinRatio`. For each RFQ expected win is 1/PanelSize. For example for LP participating in 20 RFQ each with 4 LPS the expected number of wins will be 20 x (1/4) = 5
+- `ExpectedWinRatio` - is `(ExpectedWins / NumberOfParticipations) * 100`
+- `AverageRFQPanelSize` - average size of RFQ panel for this LP
+
+###  Volume Stats
+
+- `VolumeParticipated` - volume of RFQs LP participated in
+- `VolumeWon` - is the volume  of RFQ requests won
+- `ActualVolumeWinRatio` -  is `(VolumeWon / VolumeParticipated) * 100`
+- `ExpectedWinVolume` - is `ExpectedWinRatio * TradeQuantityUSD`. For each RFQ expected probability of winning  is `1 / PanelSize`. For example for LP participating in 20 RFQ each with 4 LPS the expected number of wins will be 20 x (1/4) = 5. For volume stats we adjust each RFQ by its volume.
+- `ExpectedVolumeWinRatio` - is `(ExpectedWinVolume / VolumeParticipated) * 100`
+
+### Outperformance Stats
+
+- `WinPerformanceScore` is `ActualWinRatio - ExpectedWinRatio`
+- `VolumePerformanceScore` is  `ActualVolumeWinRatio - ExpectedVolumeWinRatio`
+
+The net result of the participation report analysis can be an LP ranking according to the metrics.
+These metrics can be communicated back to the selected banks in the panel in order to improve and optimise panel composition.
+
+#### Figure
+
+## Spread Paid
+
+As RFQ are used as an immediate execution alternative to algos the cost of RFQ should be compared with algo cost (typically performance with respect to arrival mid)
+Tradefeedr API allows you to build RFQ cost curve based on the quote data.
+
+### Figure

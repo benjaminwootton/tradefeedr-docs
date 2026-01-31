@@ -1,0 +1,149 @@
+# Tradefeedr Algo Peer Universe
+
+The goal of the Algo Peer Universe is to provide global algo performance statistics across different algo execution styles and currency liquidity groups.
+
+To this end, Tradefeedr aggregates the performance of all individual algos runs in Tradefeedr the dataset. Data aggregation allows Tradefeedr to create anonymised performance aggregates to be used as benchmarks.
+
+##  Goal of this document
+
+This page presents the methodology of the Algo Peer Universe. Algo runs/data from institutions are aggregated together to produce global performance statistics.
+Information on the metrics is provided below, allowing you to get familiar and comfortable with the approach.
+
+## Benefits for sell side
+
+- Ability to understand how their algos compare across global benchmarks
+- Ability to present the performance of their algos to their current and perspective clients. To highlight relative strengths of their algos
+- Ability to engage in data driven dialog with current and perspective clients
+
+## Benefits for buy side
+- Ability to compare the performance of their current portfolio of execution algos with global benchmarks
+- Ability to use global benchmark numbers to engage in a dialogue with algo providers, with the aim to select optimal algos and execution style for their business objectives
+
+##  Release Plan
+- The first release of Tradefeedr Algo Peer Universe covered the whole year 2021 and was distributed in January 2022.
+- Update cycle: The goal is to update the data on a quarterly cycle
+
+##   Performance and Descriptive Algo Metrics
+
+- `Arrival Mid Perf`
+  - `Mean`- is the weighted average algo performance with respect to Arrival mid-price. Expressed in basis points. Positive Number means buying below Arrival mid-price
+  and selling above Arrival mid-price
+  - `Std`- is the weighted standard deviation of the Arrival mid performance (express in bps)
+
+- `Risk Transfer Perf`
+  - `Mean`- is the weighted average difference between Algo Execution Price and Risk Transfer Benchmark. Expressed in basis points
+  - `Std`- is the weighted standard deviation between Algo Execution Price and Risk Transfer Benchmark
+  - `Inf Ratio`- is the ratio of `Mean` and `Std` of `Risk Transfer Perf`. A measure of risk adjusted performance of the algo
+
+- `TWAP Mid Perf`
+  - `Mean`- is the weighted average algo performance with respect to TWAP mid-price.  Expressed in basis points
+  - `Std` - is the weighted standard deviation of the algo performance with respect to TWAP mid-price.  Expressed in basis points. Measures algo risk with respect to TWAP
+
+- `Duration (Min)` - is the weighted average algo duration (from start to finish) expressed in minutes
+- `Avg Child Size ($)`- is the weighted average child fill size (in $)
+- `Child Spread (bps)`- is the weighted average spread paid on child orders. It is expressed in bps. Positive number means child order are buying above the mid and selling below the mid
+- `Assumed Risk (bps)` - volatility in BPS during algo run expressed in BPS
+
+- `Execution Speed ($m/min)` - weighted average execution speed. The execution speed is defined as million USD equivalent executed per minute. This is average of execution speeds thus
+ it is can heavily influenced by outliers. By construction it is not consistent with total amount and total time taken. For example, if bank 1 executes two 100 mil algo in 1 and 10 minutes and the bank 2 execute two 100 mil algos in 5.5 minutes the average execution speed of bank 1 will be 55 ((100 + 10)/2) while the average execution speed of bank 2 will be just under 20 $m/m (100/5.5)
+
+- `Reversal` - is the weighted-average adverse (side-adjusted) price move post algo execution. Positive number means price on average goes down after buy order and up and sell order is finished
+
+##  Performance Buckets
+
+We split the algo universe according to two criteria:
+
+### ALGO STRATEGY
+
+- `Aggressive`: Aims for the order to complete quickly by sweeping liquidity at the available pools
+- `LiquiditySeeking`: Adaptive ('smart') algos designed to efficiently execute large orders
+- `Scheduled`:  Algo execution is determined by a schedule, it is either time-based (TWAP) or volume-based (VWAP)
+
+### Currency Pair Liquidity
+
+- `HighLiquidity` -  EURUSD, USDJPY, EURJPY
+- `Other` – everything else
+
+The performance metrics are presented across 3 algo strategy groups and two liquidity groups.
+
+##  Data Filtering
+
+- Remove 0.1% outliers from each side (high and low) by `TradeQuantityUSD`, `Duration`, `ArrivalPerfMidBPS`, `TWAPPerfMidBPS` and `TradeIntensity` (in this order)
+- Therefore, we remove about 1% of algos (by count) and about 1.5% by Trading Volume
+
+##  Data Aggregation
+
+Performance metrics are aggregated across all algos in a given bucket (bucket being for example all algos corresponding to `LiquiditySeeking`) in the following way:
+
+-  Performance metric are calculated for each LP in the bucket separately first, as `TradeQuantityUSD` is a weighted average across individual algo runs for each LP
+-  LPs with less than 50 algo runs in each bucket are dropped from consideration. As this is not sufficient enough data.
+-  Performance metric are `equally weighted` across the LPs (those with more than 50 algo runs)
+-  By using an average (rather than `TradeQuantityUSD` weighted average) metric across LPs, we aim to highlight the `opportunity set` of the algo performance rather than the `performance index`. As there may be cases where an LP with small market share has a good performance.
+This will be more visible in average metrics (as opposed to `TradeQuantityUSD` weighted).
+
+- Algo descriptive metrics such as `Duration` and `TradeIntensity` are calculated as volume weighted averages across the whole bucket.
+- `Avg Size ($m)` is calculated as the average trade size across all algo runs.
+
+### Results
+
+![Algo Peer Tables](assets/images/peer_universe/peer_universe_tables.PNG)
+
+## Strategy Execution Profiles
+
+Different strategies have different execution profiles over time. Understanding execution profile is useful for algo classification.
+
+The algo time execution profile is defined as a percentage of executed amount, as a function of time as a proportion of total algo run.
+
+The methodology is as follows:
+
+-  For each algo, we calculate the percentage of the total trading volume executed at each time percentage milestone, such as 0, 1,2 all the way to 100 where 100 corresponds to algo end. The curve for each individual algo has to start at (0,0) and end at (100,100) because we calculate percentage of executed (rather than ordered) volume.
+-  This calculates normalised algo execution pattern for each algo.
+-  We calculate `TradeQuantityUSD` weighted-average normalised execution pattern across all algos per algo strategy bucket. This is the global strategy execution profile per algo-bucket
+-  We repeat the same procedure for individual client (bank or buy side) algos runs. This is client specific, client execution profile per algo-bucket
+-  The normalised execution pattern is presented on the chart. The x-axis is the time of algo execution from 0 to 100 where 0 is algo start and 100 is algo end. On the y-axis is the amount of algo executed.
+-  Interpretation:
+  - For standard TWAP we should have straight line -  x% of volume done in x% of time for each x from 0 to 100.
+  - For `front-loaded` algos the curve goes up faster (more than a 45% degree angle) at the algo start .
+
+We present bank specific algo pattern versus global algo execution pattern for each of the algo strategies.
+
+### Figures
+
+![Algo Peer Paths](assets/images/peer_universe/peer_universe_strategy_paths.PNG)
+
+## Performance Simulation (Bank vs Global)
+
+- Suppose the client sees (from peer universe data) that an average performance of a bank (presented to them by a bank subscribing to peer product) is better than global benchmark
+- Natural questions:
+  - How statistically significant is the difference between performances?
+  - Is it just noise?
+  - If I execute `N` algos how likely it is that this bank algo (or set of algos that we consider in the strategy bucket) will outperform the global universe?
+- If client wants to run just 1 algo, this not a sufficient sample size to draw any conclusions from. What about 100 algos? Why 100?
+Switching to algo execution is a long-term decision,  over a 6 month period a buy side client is likely to do 100 algos with a bank, if they are one of the main providers.
+
+The experiment is as follows:    
+
+- For bank data:
+  - Sample randomly 100 algos run from bank data (out of all possible runs in banks algo runs)
+  - Take average performance of these 100 runs
+  - Repeat the above 500 times (this can be done a number of times, it is likely after 500 repeats not change much). Resulting in 500 average numbers where each number is average across 100 algos
+- Replicate above for the global universe of algos
+- Plot two distribution – One for the bank and one for the global algo universe. This is the distribution of average performance over 100 algos, providing us the ability to run statistical odds
+- From this data we can compute the probability of bank algo performance being better than global performance at 100 algo runs
+- One can visualise the expected average performance (average is what really matters) rather than an outcome of each algo which is less meaningful
+
+### Figures
+
+![Algo Peer Dist](assets/images/peer_universe/peer_universe_algo_perf_distribution.PNG)
+
+##  Simulating Performance Distribution of Individual Algos
+
+This service is only available for paying client on Tradefeedr Algo Peer Universe.
+
+The experiment is the same as in the above simulation but it is done at the algo level.
+The goal is to allow the bank to present to a client an expected distribution of their algo performance (based on historical data).
+
+So that the client can use this distribution to see if they are already using the algo and the performance compared to the universe (performance ranking can be calculated).
+If the clients performance is below par (say in bottom quartile) they can approach the bank for consulting on how they can use algo more effectively.
+
+If the client is **NOT** using those algos already, is the presented performance appealing enough for them to make a switch?
