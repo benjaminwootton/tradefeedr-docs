@@ -1,7 +1,4 @@
 # Table of contents
 
-* [Tradefeedr API Quickstart](README.md)
-* [Who Are We](who-are-we.md)
-* [Tradefeedr APIS](tradefeedr-apis.md)
-* [Bens Test Link](https://google.com)
-* [Foo](foo.md)
+* [Tradefeedr Overview](README.md)
+* [Getting Started](who-are-we.md)
